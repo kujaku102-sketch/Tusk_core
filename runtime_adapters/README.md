@@ -1,0 +1,6 @@
+# Runtime Adapters
+
+モデル名やIDE/CLI固有操作をCoreから分離する。Adapterは論理ロールと実行環境のbindingだけを所有し、Core policyやExtension仕様を再定義しない。
+
+初版ではAdapter実装を同梱しない。未配置でもCoreとSharpenerの検証は実行できる。
+

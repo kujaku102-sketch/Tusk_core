@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "architecture": "Tusk_core",
+  "components": [
+    {
+      "id": "core",
+      "path": ".",
+      "entry": "AGENTS.md",
+      "kind": "core",
+      "status": "operational",
+      "scope": "domain-neutral",
+      "requires": []
+    }
+  ]
+}

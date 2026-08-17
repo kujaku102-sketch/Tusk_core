@@ -1,0 +1,16 @@
+/work/*
+!/work/settings/
+/work/settings/*
+!/work/settings/extensions.enabled.json.example
+/archive/
+/tmp/
+/developer.key.json
+**/__pycache__/
+*.py[cod]
+*.log
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

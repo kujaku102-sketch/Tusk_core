@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "checks": [
+    {"id": "reference_consistency", "auto_repairable": false},
+    {"id": "authority_conflicts", "auto_repairable": false},
+    {"id": "manifest_catalog", "auto_repairable": true, "repair_actions": ["manifest_hashes"]},
+    {"id": "error_codes", "auto_repairable": false},
+    {"id": "test_map", "auto_repairable": false},
+    {"id": "cache_freshness", "auto_repairable": false}
+  ],
+  "cache_stale_days": 30
+}
+

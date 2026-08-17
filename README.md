@@ -25,7 +25,9 @@ python Tusk_sharpener/sharpener.py check --target Tusk_core --workspace .
 
 ## Runtime adapters
 
-CodexとClaudeの論理ロール変換を同梱する。ClaudeはFableを開発指揮・最上位レビュー、Opusを実装、Sonnetを低推論へ割り当てる。
+CodexとClaude向けの論理ロール変換を同梱する。Claude向けAdapterでは、Tusk独自aliasのFableを開発指揮・最上位レビュー、Opusを実装、Sonnetを低推論へ割り当てる。
+
+Tusk CoreはOpenAI、Anthropicその他のモデル提供者による公式製品、提携製品、認定製品ではない。各社名、製品名、モデル名は互換Adapterの対象を識別するためだけに使用する。
 
 ```powershell
 python runtime_adapters/role_adapter.py validate

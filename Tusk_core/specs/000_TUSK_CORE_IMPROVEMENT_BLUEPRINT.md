@@ -9,7 +9,7 @@
 
 ## 情報源
 
-- 共有会話: `https://chatgpt.com/share/6a80c392-8284-83e8-83c2-18e7dc57dd0b`
+- 公開会話への依存なし。現行正本とGit履歴だけを根拠とする。
 - 現行正本: `GENERAL.md`、`IMPLEMENTATION_INTENSITY.md`、`PROCESS_LEVELS.md`、`PROCESS_LEVEL_CORRECTIONS.md`、`LIGHTWEIGHT_ROUTE.md`、`PROTECTED_SURFACES.md`、`SKIM_DECISION.md`、`FOCUS_CACHE_SPEC.md`、`AUTHORITY_SEPARATION.md`
 
 ## 改善案13件の棚卸し

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "slice_id", "status", "changed_files", "tests", "summary", "issues"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "slice_id": {"type": "string"},
+    "status": {"enum": ["success", "failed", "needs_review"]},
+    "changed_files": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "tests": {"type": "array", "items": {"type": "string"}},
+    "summary": {"type": "string"},
+    "issues": {"type": "array", "items": {"type": "string"}}
+  }
+}

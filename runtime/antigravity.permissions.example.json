@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "command(Get-Content work/tasks/slices/slice-01.json)",
+      "command(Get-Content work/tasks/slices/slice-02.json)",
+      "command(Get-Content work/tasks/slices/slice-03.json)",
+      "command(python -m unittest discover -s tests -p \"test_*.py\")"
+    ]
+  }
+}

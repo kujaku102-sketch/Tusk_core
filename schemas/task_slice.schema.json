@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["slice_id", "objective", "readable_paths", "writable_paths", "input_contract", "output_contract", "dependencies", "acceptance_test", "forbidden_changes"],
+  "properties": {
+    "slice_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
+    "objective": {"type": "string", "minLength": 1},
+    "readable_paths": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "writable_paths": {"type": "array", "items": {"type": "string"}, "minItems": 1, "uniqueItems": true},
+    "input_contract": {"type": "object"},
+    "output_contract": {"type": "object"},
+    "dependencies": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "acceptance_test": {"type": "string", "minLength": 1},
+    "forbidden_changes": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+  }
+}

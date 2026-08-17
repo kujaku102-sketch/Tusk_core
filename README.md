@@ -1,38 +1,30 @@
-# Tusk Core
+# Tusk-flash
 
-**導入方法:ワークスペースの直下にすべて配置後、エージェントに読ませる**
+Antigravity上のGemini Flashに特化した、独立・軽量なTuskディストリビューション。
 
-TuskはAI支援開発の共通契約、自己監査、実行環境差し替え、拡張機能を分離する小型アーキテクチャ。
+- 文法準拠の構造化入出力
+- 現在構造だけを保存するContext Cache
+- 最大3子への責務分割と並列起動
+- timeout、終了コード、文法違反を検出するTest Guard
 
-```text
-Tusk_core/          共通契約・テスト・機械判定
-Tusk_sharpener/     Integrity / Authenticity / Consistency監査
-runtime_adapters/   Codex、Gemini、Claude等の実行環境差し替え口
-extensions/         ドメイン固有能力
-work/               ローカルactivationと生成状態（Git対象外）
-```
+Extension、複数Provider、Sharpener、Focus Cache、承認階層は持たない。
 
 ## Quick check
 
 ```powershell
-Push-Location Tusk_core
 python -m unittest discover -s tests -p "test_*.py"
-Pop-Location
-python Tusk_sharpener/sharpener.py check --target Tusk_core --workspace .
+python runtime/context_cache.py --root . --output work/context/project.json
 ```
 
-製品コード、認証キー、実行Cache、archiveは同梱しない。Extensionは明示的に導入・有効化したものだけを読む。
+`agy`がPATHにあればGemini 3.6 Flash Mediumを既定で使う。変更する場合だけ`TUSK_FLASH_AGENT_COMMAND`へ、`{slice}`と`{result}`を含むAntigravity起動コマンドをJSON文字列配列で設定する。shell文字列は実行しない。
 
-## Runtime adapters
-
-CodexとClaude向けの論理ロール変換を同梱する。Claude向けAdapterでは、Tusk独自aliasのFableを開発指揮・最上位レビュー、Opusを実装、Sonnetを低推論へ割り当てる。
-
-Tusk CoreはOpenAI、Anthropicその他のモデル提供者による公式製品、提携製品、認定製品ではない。各社名、製品名、モデル名は互換Adapterの対象を識別するためだけに使用する。
+既定起動は`--sandbox`を使用する。`runtime/antigravity.permissions.example.json`を参考に、Slice読込とfocused testに必要なコマンドだけをAntigravityの`permissions.allow`へ事前追加する。既存`settings.json`を上書きせず、`allow`配列へ必要項目だけをマージする。`--dangerously-skip-permissions`は使用しない。
 
 ```powershell
-python runtime_adapters/role_adapter.py validate
+$env:TUSK_FLASH_AGENT_COMMAND = '["your-command","--task","{slice}","--output","{result}"]'
+python runtime/orchestrator.py run --plan work/tasks/plan.json
 ```
 
-## License
+Tusk-flashはGoogle、Antigravityその他の提供者による公式・提携・認定製品ではない。名称は互換対象の識別だけに使用する。
 
 Apache License 2.0。詳細は`LICENSE`を参照。

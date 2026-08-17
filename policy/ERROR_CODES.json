@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "codes": {
+    "F001": "agent process failed",
+    "F002": "agent result violates grammar",
+    "F003": "write scopes overlap",
+    "F004": "test failed or timed out",
+    "F005": "protected or destructive scope requires human review",
+    "M001": "recoverable launch-path correction",
+    "M002": "non-blocking diagnostic issue"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event", "code", "message", "timestamp_utc"],
+  "properties": {
+    "event": {"enum": ["PROGRESS", "MINOR", "FAIL", "DONE"]},
+    "code": {"type": ["string", "null"]},
+    "message": {"type": "string"},
+    "timestamp_utc": {"type": "string"}
+  }
+}

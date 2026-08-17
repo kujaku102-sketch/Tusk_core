@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "project_id", "root", "generated_at_utc", "git_head", "important_files", "entry_points", "test_commands", "dependency_edges", "protected_paths", "recent_failures"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "root": {"type": "string", "minLength": 1},
+    "generated_at_utc": {"type": "string"},
+    "git_head": {"type": ["string", "null"]},
+    "important_files": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "entry_points": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "test_commands": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "dependency_edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "imports"],
+        "properties": {
+          "source": {"type": "string"},
+          "imports": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "protected_paths": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "recent_failures": {"type": "array", "items": {"type": "string"}}
+  }
+}

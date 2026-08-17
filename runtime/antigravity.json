@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "runtime": "antigravity",
+  "model_family": "gemini-3.6-flash",
+  "default_model": "gemini-3.6-flash-medium",
+  "execution": "parallel_subprocess",
+  "max_children": 3,
+  "command_env": "TUSK_FLASH_AGENT_COMMAND",
+  "required_placeholders": ["{slice}", "{result}"],
+  "default_command": [
+    "agy",
+    "--print",
+    "Read the task slice JSON at {slice}. Work only inside writable_paths and do not modify any other path. Run the acceptance test. Write only a schema-compliant agent result JSON to {result}; do not include markdown or reasoning history.",
+    "--model",
+    "gemini-3.6-flash-medium",
+    "--effort",
+    "medium",
+    "--mode",
+    "accept-edits",
+    "--sandbox",
+    "--output-format",
+    "text",
+    "--print-timeout",
+    "15m"
+  ]
+}

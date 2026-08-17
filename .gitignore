@@ -1,7 +1,8 @@
-/work/*
-!/work/settings/
-/work/settings/*
-!/work/settings/extensions.enabled.json.example
+/work/context/**
+/work/tasks/**
+/work/results/**
+/work/logs/**
+/work/smoke/**
 /archive/
 /tmp/
 /developer.key.json

@@ -15,9 +15,22 @@ work/               ローカルactivationと生成状態（Git対象外）
 ## Quick check
 
 ```powershell
-python -m unittest discover -s Tusk_core/tests -p "test_*.py"
+Push-Location Tusk_core
+python -m unittest discover -s tests -p "test_*.py"
+Pop-Location
 python Tusk_sharpener/sharpener.py check --target Tusk_core --workspace .
 ```
 
 製品コード、認証キー、実行Cache、archiveは同梱しない。Extensionは明示的に導入・有効化したものだけを読む。
 
+## Runtime adapters
+
+CodexとClaudeの論理ロール変換を同梱する。ClaudeはFableを開発指揮・最上位レビュー、Opusを実装、Sonnetを低推論へ割り当てる。
+
+```powershell
+python runtime_adapters/role_adapter.py validate
+```
+
+## License
+
+Apache License 2.0。詳細は`LICENSE`を参照。

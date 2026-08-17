@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "adapter_id": "codex",
+  "bindings": {
+    "lead": {"model_alias": "gpt-5.6-sol", "model_env": "TUSK_CODEX_LEAD_MODEL", "reasoning_effort": "high", "access": "orchestrate"},
+    "skim": {"model_alias": "gpt-5.6-luna", "model_env": "TUSK_CODEX_SCOUT_MODEL", "reasoning_effort": "low", "access": "read_only"},
+    "failure_analysis": {"model_alias": "gpt-5.6-luna", "model_env": "TUSK_CODEX_ANALYSIS_MODEL", "reasoning_effort": "low", "access": "read_only"},
+    "handoff": {"model_alias": "gpt-5.6-luna", "model_env": "TUSK_CODEX_HANDOFF_MODEL", "reasoning_effort": "medium", "access": "transform_only"},
+    "implementation": {
+      "LOW": {"model_alias": "gpt-5.6-luna", "model_env": "TUSK_CODEX_LOW_MODEL", "reasoning_effort": "high", "access": "write_limited"},
+      "MID": {"model_alias": "gpt-5.6-luna", "model_env": "TUSK_CODEX_MID_MODEL", "reasoning_effort": "ultra", "access": "write_limited"},
+      "HIGH": {"model_alias": "gpt-5.6-terra", "model_env": "TUSK_CODEX_HIGH_MODEL", "reasoning_effort": "medium", "access": "write_limited"},
+      "MAX": {"model_alias": "gpt-5.6-sol", "model_env": "TUSK_CODEX_MAX_MODEL", "reasoning_effort": "high", "access": "write_limited"}
+    },
+    "review": {
+      "LOW": {"model_alias": "gpt-5.6-terra", "model_env": "TUSK_CODEX_REVIEW_LOW_MODEL", "reasoning_effort": "medium", "access": "review_only"},
+      "MID": {"model_alias": "gpt-5.6-sol", "model_env": "TUSK_CODEX_REVIEW_MID_MODEL", "reasoning_effort": "low", "access": "review_only"},
+      "HIGH": {"model_alias": "gpt-5.6-sol", "model_env": "TUSK_CODEX_REVIEW_HIGH_MODEL", "reasoning_effort": "medium", "access": "review_only"},
+      "MAX": {"model_alias": "gpt-5.6-sol", "model_env": "TUSK_CODEX_REVIEW_MAX_MODEL", "reasoning_effort": "high", "access": "review_only"}
+    }
+  }
+}
+

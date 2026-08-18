@@ -35,7 +35,7 @@
     {"path":"tests/test_authority_auditor.py","sha256":"a89f4ef8f95fff4d40c16334994b9eb4f7f8474c4ae388718ab159e69fe6a7f8"},
     {"path":"tests/test_entry_documents_contract.py","sha256":"6cc7dda7c913e00229045793abb9ffa1411d1c927366316c63dd72839cf4c634"},
     {"path":"tests/test_error_policy_contract.py","sha256":"4798600426b91010b9dbf02721d9324e91e21287cf72e72226b34eb266f245b1"},
-    {"path":"tests/test_extension_manager.py","sha256":"ad67c01101ae73b000f7aee008ddba272179f975f85a7cc716674455d5c98ee2"},
+    {"path":"tests/test_extension_manager.py","sha256":"9c3fd2e1157fffca23ed8e1fab1abb162fc94ac011a612b2cf19ed59e1b26c32"},
     {"path":"tests/test_integrity_gate.py","sha256":"4b2e6678595ffee5933f15e5682b911fc7886a6e4e7cd2cee150344d4e569e5f"},
     {"path":"tests/test_inq.py","sha256":"3d7ef02cdac21a488b236ff558ffa7813ffaa2a53cafce117862400f694a4648"},
     {"path":"tests/test_landmine_cache.py","sha256":"9104a15f7c7be22425ab3bf9d0d777bf389ccbba8c9ecfcdc229b64dd2903d33"},

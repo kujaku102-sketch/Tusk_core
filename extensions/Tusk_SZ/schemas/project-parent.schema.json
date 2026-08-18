@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["schema_version", "project_id", "name", "producer", "local_workspace", "drive", "canonical_map", "required_data", "child_index"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "project_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9_-]{2,63}$"},
+    "name": {"type": "string", "minLength": 1},
+    "producer": {"const": "WKZ"},
+    "local_workspace": {"type": "string", "minLength": 3},
+    "drive": {"type": "object", "required": ["folder_id"], "properties": {"folder_id": {"type": "string", "minLength": 10}}},
+    "canonical_map": {"type": "string"},
+    "required_data": {"type": "string"},
+    "child_index": {"type": "string"}
+  },
+  "additionalProperties": true
+}

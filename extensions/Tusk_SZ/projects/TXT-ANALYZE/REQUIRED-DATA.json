@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "project_id": "TXT-ANALYZE",
+  "items": [
+    {"id":"cards","destination":"simple-zeke/src/data/cards.js","stage_path":"portable-data/cards.js","sha256":"04ad09a7ddcdeed33277d2605c477b371f240dd7b19090c50f094ea59055b26b"},
+    {"id":"neutron","destination":"simple-zeke/src/data/neutron.js","stage_path":"portable-data/neutron.js","sha256":"ecfba71592655af83bf6f3361a102dbcc2f7bcca9fbe9efb770eeb7b0c8414b0"},
+    {"id":"tutorial","destination":"simple-zeke/src/data/tutorial.js","stage_path":"portable-data/tutorial.js","sha256":"55c34fc58a5b2e7f48f72eab6f65887cdf6bbcbf732f38043ddd3e530d5250db"},
+    {"id":"vengeance","destination":"simple-zeke/src/data/vengeance.js","stage_path":"portable-data/vengeance.js","sha256":"b2aeaec0ec06f5f41fbda8035be337eed8f6a6792805bf033493a070857311e8"}
+  ],
+  "excluded": ["node_modules", "dist", "artifacts", "credentials", "tokens", "machine-specific runtimes"]
+}

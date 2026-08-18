@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","required":["schema_version","work_id","parent_project_id","producer","status","evidence","final_hashes"],"properties":{"schema_version":{"const":1},"producer":{"const":"WKZ"},"evidence":{"type":"array"},"final_hashes":{"type":"object"}},"additionalProperties":true}

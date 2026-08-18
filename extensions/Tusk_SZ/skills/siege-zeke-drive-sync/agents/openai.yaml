@@ -1,0 +1,4 @@
+interface:
+  display_name: "Siege Zeke Drive Sync"
+  short_description: "Safely stage compare and synchronize Siege-Zeke Drive artifacts"
+  default_prompt: "Inventory and synchronize this registered Siege-Zeke project with conflict-safe staging and verification."

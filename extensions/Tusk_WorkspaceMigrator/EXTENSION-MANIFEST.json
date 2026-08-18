@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "root": "Tusk_WorkspaceMigrator",
+  "entry": "AGENTS.md",
+  "algorithm": "sha256",
+  "runtime_scope": {
+    "workspace_required": true,
+    "derived_from": [
+      "activation",
+      "current_task",
+      "current_spec",
+      "git_diff",
+      "validated_context_cache"
+    ],
+    "owned_paths": [
+      "extensions/Tusk_WorkspaceMigrator",
+      "work/migrations/<migration-id>"
+    ],
+    "excluded_paths": [
+      "Tusk_core",
+      "Tusk_sharpener",
+      "runtime_adapters",
+      "extensions/<active-extension>",
+      "explicit_legacy_root (read-only input)"
+    ]
+  },
+  "required_read_order": [
+    "AGENTS.md",
+    "WORKSPACE_MIGRATOR_SPEC.md",
+    "ERROR_CODES.md"
+  ],
+  "managed_files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "b9d79c7736c4545e697c699649244132867082e014cb342c73f0064916df3393"
+    },
+    {
+      "path": "ERROR_CODES.md",
+      "sha256": "88979a0d2311a7e82e0e137cf450228a1062eb375153a7d8c846e268943ba239"
+    },
+    {
+      "path": "README.md",
+      "sha256": "9da86f086262a8b3bf3330c435ea832aaa1656312ea034c2ff2324498dde9787"
+    },
+    {
+      "path": "tests/test_workspace_migrator.py",
+      "sha256": "e19c030a47bbc0031de0637491718205f4c4cdd7393240935cf3aeb4d4650dd6"
+    },
+    {
+      "path": "tools/workspace_migrator.py",
+      "sha256": "0aeb9ffcdeb9e4992bed5a3da3efd2a7b0ad99048a92d164a8cc2588af06e6b1"
+    },
+    {
+      "path": "WORKSPACE_MIGRATOR_SPEC.md",
+      "sha256": "47d19e71ccda3d05d401a3d1a141a0433bc21a9d24c46c7859e61e133dbe4afb"
+    }
+  ]
+}

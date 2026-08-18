@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","description":"Project progress is stored as human-readable PROGRESS.md; machine state resides in PROJECT.json and CHILDREN.json.","properties":{},"additionalProperties":true}

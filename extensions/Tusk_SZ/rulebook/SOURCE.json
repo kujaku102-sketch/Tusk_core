@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "producer": "WKZ",
+  "managed_file": "siege-zeke-rulebook-current.md",
+  "source_path": "D:\\projects\\txt-analyze\\simple-zeke\\docs\\rules\\siege-zeke-rulebook-current.md",
+  "source_audit": "D:\\projects\\txt-analyze\\simple-zeke\\docs\\rules\\source-audit.md",
+  "revision": "2.0-anchor.4",
+  "source_sha256": "846b4f5cbc5550fca2b0100e818883b22655e9ff9917d6b5343f372a9c29c51f",
+  "managed_sha256": "846b4f5cbc5550fca2b0100e818883b22655e9ff9917d6b5343f372a9c29c51f",
+  "human_drive_name": "★Siege-Zekeルールブック-current.md",
+  "drive_parent_id": "1yLQKxHxHjktl7frBAVZ-Vh7Sjm18G-T3",
+  "drive_file_id": "1NIlR1m94dkgBa38Vl0DXmDhNPcPjO02b",
+  "sync_state": "synced"
+}

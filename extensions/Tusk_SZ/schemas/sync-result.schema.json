@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","required":["schema_version","program_id","root_id","operation","rows","ok"],"properties":{"schema_version":{"const":1},"program_id":{"const":"TUSK_SZ_SYNC"},"root_id":{"const":"1yLQKxHxHjktl7frBAVZ-Vh7Sjm18G-T3"}},"additionalProperties":true}

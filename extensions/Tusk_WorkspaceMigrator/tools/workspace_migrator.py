@@ -189,6 +189,14 @@ def generated_manifest(candidate: Candidate, destination: Path) -> dict:
         {"path": relative.as_posix(), "sha256": digest(destination / relative)}
         for relative in candidate.files
     ]
+    top_level_specs = [
+        relative.as_posix()
+        for relative in candidate.files
+        if len(relative.parts) == 1 and relative.name.endswith("_SPEC.md")
+    ]
+    required_read_order = ["AGENTS.md", *top_level_specs]
+    if Path("ERROR_CODES.md") in candidate.files:
+        required_read_order.append("ERROR_CODES.md")
     return {
         "schema_version": 1,
         "root": candidate.name,
@@ -211,6 +219,7 @@ def generated_manifest(candidate: Candidate, destination: Path) -> dict:
                 "work/migrations",
             ],
         },
+        "required_read_order": required_read_order,
         "managed_files": managed,
     }
 

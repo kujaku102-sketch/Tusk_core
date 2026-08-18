@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["schema_version", "project_id", "artifacts"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "project_id": {"type": "string"},
+    "artifacts": {"type": "array", "items": {"type": "object", "required": ["id", "classification", "local_path", "stage_path", "authority", "accepted_sha256", "producer", "permitted_operations", "required_validation", "drive_parent_id", "mime_type"], "properties": {
+      "classification": {"enum": ["canonical_source", "working", "generated", "asset", "archive", "transport", "secret"]},
+      "authority": {"enum": ["local", "drive", "three_way", "read_only"]},
+      "producer":{"const":"WKZ"},"permitted_operations":{"type":"array"},"required_validation":{"type":"array"}
+    }, "additionalProperties": true}}
+  },
+  "additionalProperties": false
+}

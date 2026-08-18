@@ -21,7 +21,8 @@
 - `work`、`archive`、build、dist、node_modules、仮想環境、Cache、秘密値、
   bytecode、既存manifestは複製しない。
 - symlink、junction、reparse pointは走査・複製しない。
-- stageした静的ファイルから新しい`EXTENSION-MANIFEST.json`を生成する。
+- stageした静的ファイルから新しい`EXTENSION-MANIFEST.json`を生成し、入口、
+  top-level Spec、エラーコードの`required_read_order`を保持する。
 
 ## Safety
 

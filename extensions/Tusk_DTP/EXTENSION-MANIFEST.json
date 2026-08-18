@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "root": "Tusk_DTP",
+  "entry": "AGENTS.md",
+  "algorithm": "sha256",
+  "runtime_scope": {
+    "workspace_required": true,
+    "derived_from": [
+      "activation",
+      "current_task",
+      "current_spec",
+      "git_diff",
+      "validated_context_cache"
+    ],
+    "owned_paths": [
+      "extensions/Tusk_DTP"
+    ],
+    "excluded_paths": [
+      "Tusk_core",
+      "Tusk_sharpener",
+      "runtime_adapters",
+      "work/migrations"
+    ]
+  },
+  "required_read_order": [
+    "AGENTS.md",
+    "IDTASK_DTP_SPEC.md",
+    "ERROR_CODES.md"
+  ],
+  "managed_files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "2572986d2a36d68c953c40b06323c25b8a4ad08a2b72289de663eced7f9c7454"
+    },
+    {
+      "path": "ERROR_CODES.md",
+      "sha256": "85012c676621a152b8a0083c2e23fcc6a8a4448cb2e89e42164ed857fc225d4d"
+    },
+    {
+      "path": "IDTASK_DTP_SPEC.md",
+      "sha256": "58f066c2e4255a9eec29ab920927b5a56f4a57889f1fea2230c65318c79b0272"
+    },
+    {
+      "path": "tools/context_cache/build_context_cache.py",
+      "sha256": "3779237e2c8b2deb44b07c65059da4f5149af574c640408d956f18ae4d33cd68"
+    },
+    {
+      "path": "tools/context_cache/read_changed_context.py",
+      "sha256": "899611af06366c9b66f54a5254cab0778b0c42dafb16a57ba3c2c87b5c6b6b41"
+    },
+    {
+      "path": "tools/context_cache/select_tests.py",
+      "sha256": "1249b08dc1a31f4dbead71da313a26650b07aa4f1f0d5221c5f74bd0c7ba5888"
+    },
+    {
+      "path": "tools/context_cache/update_log_digest.py",
+      "sha256": "6bed299a4dde8b1fc53eedb4e68e15532fbdcc872bf6513d98db39d179d88966"
+    }
+  ]
+}

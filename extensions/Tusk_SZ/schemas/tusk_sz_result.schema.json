@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tusk_sz_result.schema.json",
+  "title": "Tusk SZ execution result",
+  "type": "object",
+  "required": [
+    "schema_version", "program_id", "run_id", "profile", "mode",
+    "workspace", "overall_status", "ok", "identity", "dependencies",
+    "layers", "cleanup", "markers", "started_at", "finished_at"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "program_id": {"const": "TUSK_SZ"},
+    "run_id": {"type": "string", "minLength": 1},
+    "profile": {"enum": ["web", "illustrator"]},
+    "mode": {"enum": ["inspect", "apply"]},
+    "workspace": {"type": "string", "minLength": 1},
+    "evidence_dir": {"type": ["string", "null"]},
+    "overall_status": {"enum": ["ready", "passed", "failed", "blocked"]},
+    "ok": {"type": "boolean"},
+    "identity": {"type": "object"},
+    "dependencies": {"type": "object"},
+    "layers": {
+      "type": "object",
+      "required": ["renderer", "ui", "e2e"],
+      "properties": {
+        "renderer": {"$ref": "#/$defs/layer"},
+        "ui": {"$ref": "#/$defs/layer"},
+        "e2e": {"$ref": "#/$defs/layer"}
+      },
+      "additionalProperties": false
+    },
+    "cleanup": {
+      "type": "object",
+      "required": ["required", "attempted", "confirmed"],
+      "properties": {
+        "required": {"type": "boolean"},
+        "attempted": {"type": "boolean"},
+        "confirmed": {"type": "boolean"},
+        "detail": {"type": "string"}
+      }
+    },
+    "markers": {"type": "array", "items": {"type": "object"}},
+    "started_at": {"type": "string", "minLength": 1},
+    "finished_at": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "layer": {
+      "type": "object",
+      "required": ["status", "code", "detail", "evidence"],
+      "properties": {
+        "status": {"enum": ["passed", "failed", "blocked", "ready", "not_run", "not_applicable"]},
+        "code": {"type": ["string", "null"]},
+        "detail": {"type": "string"},
+        "command": {"type": ["array", "null"], "items": {"type": "string"}},
+        "evidence": {"type": "array", "items": {"type": "string"}},
+        "criteria": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  },
+  "additionalProperties": true
+}

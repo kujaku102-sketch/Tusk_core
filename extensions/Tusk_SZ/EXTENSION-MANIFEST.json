@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "root": "Tusk_SZ",
+  "entry": "AGENTS.md",
+  "algorithm": "sha256",
+  "runtime_scope": {
+    "workspace_required": true,
+    "derived_from": [
+      "activation",
+      "current_task",
+      "current_spec",
+      "git_diff",
+      "validated_context_cache"
+    ],
+    "owned_paths": [
+      "extensions/Tusk_SZ"
+    ],
+    "excluded_paths": [
+      "Tusk_core",
+      "Tusk_sharpener",
+      "runtime_adapters",
+      "work/migrations"
+    ]
+  },
+  "required_read_order": [
+    "AGENTS.md",
+    "TUSK_SZ_SPEC.md",
+    "ERROR_CODES.md"
+  ],
+  "managed_files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "3916273b128dc9f8b5ba4a22f9d2bc7e74d1d787269ec1f31577956c174f7423"
+    },
+    {
+      "path": "ERROR_CODES.md",
+      "sha256": "d719e0943ff6b838b1cce142994e0b69bfff5518a1f69c84b1d3f3ae69668449"
+    },
+    {
+      "path": "GLOBAL.json",
+      "sha256": "3eb7654763c76958a7f8a7fca5689939c6ce98333514fd60146001555796efca"
+    },
+    {
+      "path": "README.md",
+      "sha256": "6d32ce464187003f903f9c78e80dfeb1bc515902b5de32f7757122d6ce87a461"
+    },
+    {
+      "path": "TUSK_SZ_SPEC.md",
+      "sha256": "b9a8c6e1993c2495c8d327cc6f016925c6063b172c4f34f6a721c35354f67805"
+    },
+    {
+      "path": "examples/USAGE.md",
+      "sha256": "ac1d68cf9055156f4204970a5684c6984129d1b38c70ee942161c8ac79ceffe5"
+    },
+    {
+      "path": "producer.json",
+      "sha256": "62483d12fb76d149ab15ccba205fd3af4b8834ee62acaa6457b7b6561bce8971"
+    },
+    {
+      "path": "projects/TXT-ANALYZE/CANONICAL-MAP.json",
+      "sha256": "6b43700d007c99dd4c4b51f6528a22f64b6f81b85e69ec09e4f5140de782ab7f"
+    },
+    {
+      "path": "projects/TXT-ANALYZE/CHILDREN.json",
+      "sha256": "f45aacf16a5c3fe4e94371e5b7cbc584f129d44d1b233224993c7d6a6775204a"
+    },
+    {
+      "path": "projects/TXT-ANALYZE/PROGRESS.md",
+      "sha256": "4d15e546e19bcf3daca8f5dbd95c11c88a304a6ee7e30e34f136c7ac9fe89bc0"
+    },
+    {
+      "path": "projects/TXT-ANALYZE/PROJECT.json",
+      "sha256": "db587aa7d53bb254fd04dcf79553d1b677ef42c9038879abc3d997f0e02ccb31"
+    },
+    {
+      "path": "projects/TXT-ANALYZE/REQUIRED-DATA.json",
+      "sha256": "b5bbc853110055d204aa4cbcb0537152897374cab6258dd5cecad035a04e79b4"
+    },
+    {
+      "path": "projects/TXT-ANALYZE/children/TA-20260810-002.json",
+      "sha256": "a4b4113840ba53876aa4ca16a9955306737750bf2c317507408df630198caecf"
+    },
+    {
+      "path": "projects/TXT-ANALYZE/children/TA-20260813-001.json",
+      "sha256": "1b2eeb4006b055f06671bdd39ca3d55451c919eb5d9e63e09b182b38a6226680"
+    },
+    {
+      "path": "projects/TXT-ANALYZE/portable-data/cards.js",
+      "sha256": "04ad09a7ddcdeed33277d2605c477b371f240dd7b19090c50f094ea59055b26b"
+    },
+    {
+      "path": "projects/TXT-ANALYZE/portable-data/neutron.js",
+      "sha256": "ecfba71592655af83bf6f3361a102dbcc2f7bcca9fbe9efb770eeb7b0c8414b0"
+    },
+    {
+      "path": "projects/TXT-ANALYZE/portable-data/tutorial.js",
+      "sha256": "55c34fc58a5b2e7f48f72eab6f65887cdf6bbcbf732f38043ddd3e530d5250db"
+    },
+    {
+      "path": "projects/TXT-ANALYZE/portable-data/vengeance.js",
+      "sha256": "b2aeaec0ec06f5f41fbda8035be337eed8f6a6792805bf033493a070857311e8"
+    },
+    {
+      "path": "references/DRIVE_AND_PROJECT_MANAGEMENT.md",
+      "sha256": "501217081c5601a20d4752a7784c4751bfa7481e17f2c880ce79e512545e2f44"
+    },
+    {
+      "path": "references/SIEGE_ZEKE_RULES_AND_TEXT_ANALYSIS.md",
+      "sha256": "13305eea72fbde81d2059b7975f22153c4e5706455b211ca22cb06d98250ae94"
+    },
+    {
+      "path": "rulebook/SOURCE.json",
+      "sha256": "f930ece306dbf4deba7eee5d83955a6f4e33711aa71a4422ae76f913633c63bc"
+    },
+    {
+      "path": "rulebook/siege-zeke-rulebook-current.md",
+      "sha256": "846b4f5cbc5550fca2b0100e818883b22655e9ff9917d6b5343f372a9c29c51f"
+    },
+    {
+      "path": "schemas/bootstrap-result.schema.json",
+      "sha256": "4a724d44ecf93f60f6414574f671d4b9b521e3755f37403da859bf2f0d72486b"
+    },
+    {
+      "path": "schemas/canonical-map.schema.json",
+      "sha256": "1985ef4ebc8693a9b5466f8f3001bd75dd6cfba0f17352d994ac4776776de284"
+    },
+    {
+      "path": "schemas/global.schema.json",
+      "sha256": "900b19e4aa93b26ef9c765fe738668ed9dc333f23a3aef67a05c8023cdb3ff8e"
+    },
+    {
+      "path": "schemas/producer.schema.json",
+      "sha256": "6b13e8e40fc37a88e1a3b5b498a75ac3ca477f4f574172cba8125cb2ab1ec3ef"
+    },
+    {
+      "path": "schemas/progress.schema.json",
+      "sha256": "3b1dde5f7b88cec09a284f18b24db5e004ff06d8861081c69ed236826f9f0354"
+    },
+    {
+      "path": "schemas/project-parent.schema.json",
+      "sha256": "37ece627bfbc0ef629323a1f19aed3818c6b4c74239a339af64189fa2dfaf96d"
+    },
+    {
+      "path": "schemas/required-data.schema.json",
+      "sha256": "0d308b432d4a69b16326373a38f5bb729a60d1bb3e180644e96867fcf33fc0f1"
+    },
+    {
+      "path": "schemas/sync-result.schema.json",
+      "sha256": "d8fe1e1b984f85cdbcfa40ef15c392178e3aacd928bb27260520e607c981db48"
+    },
+    {
+      "path": "schemas/tusk_sz_result.schema.json",
+      "sha256": "ad8b8d9bc535a15c4583db28262540962ab656f44111734df298b4332fb53d23"
+    },
+    {
+      "path": "schemas/work-item.schema.json",
+      "sha256": "51797691d7d9c490fa9550772fc435ce960ebb8d42f8ba8a69b0020726ee08dd"
+    },
+    {
+      "path": "schemas/work-result.schema.json",
+      "sha256": "5e124eda0d416f9b5bec4c7cc5abaf1ebe774334642805e11c3ddabd334aa0d2"
+    },
+    {
+      "path": "skills/siege-zeke-bootstrap/SKILL.md",
+      "sha256": "a56e7f554aaa3a6f59689bd3061f50eca47e0fb66f96764eafb8f3fa7fe17165"
+    },
+    {
+      "path": "skills/siege-zeke-bootstrap/agents/openai.yaml",
+      "sha256": "ebf641021019193388374605f6a4a616ba517533ec68c88592a199777491abad"
+    },
+    {
+      "path": "skills/siege-zeke-bootstrap/references/AUTHENTICATION.md",
+      "sha256": "354b76ec749de81382d44d7afa49a0a61278f7363825bd6c1a2be89659cc14cf"
+    },
+    {
+      "path": "skills/siege-zeke-bootstrap/references/BOOTSTRAP-CONTRACT.md",
+      "sha256": "799925122256d7dbaafc2194c522c6a02a4a835b7f3b71aa872dccf66d687f55"
+    },
+    {
+      "path": "skills/siege-zeke-bootstrap/scripts/siege_zeke_bootstrap.py",
+      "sha256": "d91bb473e75afeec98f9dfd9ebc540fa249da41b00f02d7a9796d3b26e80bfc4"
+    },
+    {
+      "path": "skills/siege-zeke-drive-sync/SKILL.md",
+      "sha256": "4153007918f17040b76ca992f5af8f6b027c3ee7dcc45d18034aeec8bd3bfc8e"
+    },
+    {
+      "path": "skills/siege-zeke-drive-sync/agents/openai.yaml",
+      "sha256": "2e696413c94c016865f72d641bdd8cb38cd650245f6063514a490a836475b956"
+    },
+    {
+      "path": "skills/siege-zeke-drive-sync/references/DRIVE-ACCESS.md",
+      "sha256": "4e7c404c6ce7b9facae1a531ee16d0a37bba8798c7eaf5c107db7559a9151280"
+    },
+    {
+      "path": "skills/siege-zeke-drive-sync/scripts/siege_zeke_sync.py",
+      "sha256": "19b32f75d9c9a3f611f9d758771e52d82aae07e122a2d0e8ff60ae46dc669e4d"
+    },
+    {
+      "path": "templates/PROJECT.json",
+      "sha256": "ff109013df63dcf7156e8bb02c0bfcd4ef0bdc3ec18fbbaf4721c7116e5ee830"
+    },
+    {
+      "path": "templates/WORK-ITEM.json",
+      "sha256": "f8239c1b86045eb6dde4261beeb12fe08dbfdec773f64ed6b496cf2cfef3a83c"
+    },
+    {
+      "path": "tests/test_gateway.py",
+      "sha256": "0fe076feafc875d46a543b28136995ff4c9d614a9fe79db023e072747e8f24b1"
+    },
+    {
+      "path": "tests/test_tusk_sz.py",
+      "sha256": "432788dc742168cfb237fcddf7610a91aa593f977244409599e16b0a294d86d2"
+    },
+    {
+      "path": "tools/tusk_sz.py",
+      "sha256": "a10f4ac08ab3a8b3580438a32dd522b15442686311df98c11bf4e75e897d56af"
+    }
+  ]
+}

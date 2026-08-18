@@ -1,0 +1,4 @@
+interface:
+  display_name: "Siege Zeke Bootstrap"
+  short_description: "Detect and prepare a governed Siege-Zeke development environment"
+  default_prompt: "Inspect and prepare this Siege-Zeke workspace using its registered project and authentication contracts."

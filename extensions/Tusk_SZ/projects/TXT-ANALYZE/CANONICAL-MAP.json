@@ -1,0 +1,156 @@
+{
+    "schema_version":  1,
+    "project_id":  "TXT-ANALYZE",
+    "artifacts":  [
+                      {
+                          "id":  "start-here",
+                          "classification":  "canonical_source",
+                          "local_path":  "START-HERE.md",
+                          "stage_path":  "START-HERE.md",
+                          "drive_file_id":  "1xO3LKs4r5bY-nw8IENunnyzaciScjbIw",
+                          "authority":  "three_way",
+                          "producer":  "WKZ",
+                          "permitted_operations":  [
+                                                       "stage",
+                                                       "compare",
+                                                       "pull",
+                                                       "push",
+                                                       "readback"
+                                                   ],
+                          "required_validation":  [
+                                                      "sha256",
+                                                      "fixed_id",
+                                                      "parent_id",
+                                                      "readback"
+                                                  ],
+                          "accepted_sha256":  "a6c366e5cb0867dfb8a84db76721be78cb0f7f90c1e65ca0397d11041e6cde69",
+                          "drive_parent_id":  "1sukVzyE6SRYQwBiDIAqjC7suwNK7Zuov",
+                          "mime_type":  "text/markdown"
+                      },
+                      {
+                          "id":  "manual",
+                          "classification":  "canonical_source",
+                          "local_path":  "TXT-ANALYZE.md",
+                          "stage_path":  "TXT-ANALYZE.md",
+                          "drive_file_id":  "1k9xmYFw8rVo4AO9tR0o2_H4XMd9KHOWB",
+                          "authority":  "three_way",
+                          "producer":  "WKZ",
+                          "permitted_operations":  [
+                                                       "stage",
+                                                       "compare",
+                                                       "pull",
+                                                       "push",
+                                                       "readback"
+                                                   ],
+                          "required_validation":  [
+                                                      "sha256",
+                                                      "fixed_id",
+                                                      "parent_id",
+                                                      "readback"
+                                                  ],
+                          "accepted_sha256":  "defc87a9d843f9b482943d6cdb37c81cb206b1a768a4c637d9ba12473faeda0d",
+                          "drive_parent_id":  "1sukVzyE6SRYQwBiDIAqjC7suwNK7Zuov",
+                          "mime_type":  "text/markdown"
+                      },
+                      {
+                          "id":  "grammar",
+                          "classification":  "canonical_source",
+                          "local_path":  "TEXT-GRAMMAR.md",
+                          "stage_path":  "TEXT-GRAMMAR.md",
+                          "drive_file_id":  "1zYmz88M4Pi8J2hYUaPtZz3xZYUJOCvd7",
+                          "authority":  "three_way",
+                          "producer":  "WKZ",
+                          "permitted_operations":  [
+                                                       "stage",
+                                                       "compare",
+                                                       "pull",
+                                                       "push",
+                                                       "readback"
+                                                   ],
+                          "required_validation":  [
+                                                      "sha256",
+                                                      "fixed_id",
+                                                      "parent_id",
+                                                      "readback"
+                                                  ],
+                          "accepted_sha256":  "4e37a6c5ab7bab0e6adfff6c20f52a088aec6aec9fd5804e33430b856474990c",
+                          "drive_parent_id":  "1sukVzyE6SRYQwBiDIAqjC7suwNK7Zuov",
+                          "mime_type":  "text/markdown"
+                      },
+                      {
+                          "id":  "parent-ledger",
+                          "classification":  "canonical_source",
+                          "local_path":  "WORK-MANAGEMENT.md",
+                          "stage_path":  "WORK-MANAGEMENT.md",
+                          "drive_file_id":  "15KXYFkIQm-Fa8FTMKzyxsBFLUsL0Cu8Q",
+                          "authority":  "three_way",
+                          "producer":  "WKZ",
+                          "permitted_operations":  [
+                                                       "stage",
+                                                       "compare",
+                                                       "pull",
+                                                       "push",
+                                                       "readback"
+                                                   ],
+                          "required_validation":  [
+                                                      "sha256",
+                                                      "fixed_id",
+                                                      "parent_id",
+                                                      "readback"
+                                                  ],
+                          "accepted_sha256":  "0aaccee2b8d3f6ea260b32ffe42e0b3413593e1e74392518d38a019a01fb6fed",
+                          "drive_parent_id":  "1sukVzyE6SRYQwBiDIAqjC7suwNK7Zuov",
+                          "mime_type":  "text/markdown"
+                      },
+                      {
+                          "id":  "child-ledger",
+                          "classification":  "canonical_source",
+                          "local_path":  "WORK-DETAILS.md",
+                          "stage_path":  "WORK-DETAILS.md",
+                          "drive_file_id":  "1T_SccpCib0egc5WCjijOrN1zo3f8UkEl",
+                          "authority":  "three_way",
+                          "producer":  "WKZ",
+                          "permitted_operations":  [
+                                                       "stage",
+                                                       "compare",
+                                                       "pull",
+                                                       "push",
+                                                       "readback"
+                                                   ],
+                          "required_validation":  [
+                                                      "sha256",
+                                                      "fixed_id",
+                                                      "parent_id",
+                                                      "readback"
+                                                  ],
+                          "accepted_sha256":  "1a70497470faa8a32c90279980b837a9110ebad38079c424f64fd0fb0765e391",
+                          "drive_parent_id":  "1sukVzyE6SRYQwBiDIAqjC7suwNK7Zuov",
+                          "mime_type":  "text/markdown"
+                      },
+                      {
+                          "id":  "snapshot",
+                          "classification":  "transport",
+                          "local_path":  "sync/txt-analyze-workspace-latest.zip",
+                          "stage_path":  "txt-analyze-workspace-latest.zip",
+                          "drive_file_id":  "1aueYXKVu8SdEPclBAZhkZcbMeQ7xA62Y",
+                          "authority":  "three_way",
+                          "producer":  "WKZ",
+                          "permitted_operations":  [
+                                                       "stage",
+                                                       "compare",
+                                                       "pull",
+                                                       "push",
+                                                       "readback"
+                                                   ],
+                          "required_validation":  [
+                                                      "sha256",
+                                                      "fixed_id",
+                                                      "parent_id",
+                                                      "readback"
+                                                  ],
+                          "accepted_sha256":  "61ea09ce0489f79e455da78af5659abb006855cdcf6ce7dd36c8507d11f4617b",
+                          "drive_parent_id":  "1sukVzyE6SRYQwBiDIAqjC7suwNK7Zuov",
+                          "mime_type":  "application/zip"
+                      }
+                  ]
+}

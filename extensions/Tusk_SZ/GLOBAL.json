@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "architecture": "Tusk_SZ",
+  "producer": "WKZ",
+  "drive_root": {"id": "1yLQKxHxHjktl7frBAVZ-Vh7Sjm18G-T3", "inventory_depth": 1},
+  "authentication": {"provider": "google", "scope": "https://www.googleapis.com/auth/drive", "credential_locator": "D:\\google_integration\\token.json", "portable": false},
+  "projects": [{"project_id": "TXT-ANALYZE", "path": "projects/TXT-ANALYZE/PROJECT.json"}],
+  "rulebook": {"managed_path": "rulebook/siege-zeke-rulebook-current.md", "human_drive_name": "★Siege-Zekeルールブック-current.md", "drive_file_id": null}
+}

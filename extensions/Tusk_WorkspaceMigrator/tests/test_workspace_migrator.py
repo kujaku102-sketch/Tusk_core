@@ -25,6 +25,8 @@ class WorkspaceMigratorTests(unittest.TestCase):
         (workspace / "Tusk_core" / "AGENTS.md").write_text("core\n", encoding="utf-8")
         extension = legacy / "extensions" / "Tusk_Test"
         (extension / "AGENTS.md").write_text("entry\n", encoding="utf-8")
+        (extension / "TUSK_TEST_SPEC.md").write_text("spec\n", encoding="utf-8")
+        (extension / "ERROR_CODES.md").write_text("errors\n", encoding="utf-8")
         (extension / "tools" / "tool.py").write_text("VALUE = 1\n", encoding="utf-8")
         (extension / "work" / "cache" / "secret.log").write_text("legacy\n", encoding="utf-8")
         (extension / "token.json").write_text("secret\n", encoding="utf-8")
@@ -62,6 +64,10 @@ class WorkspaceMigratorTests(unittest.TestCase):
                 {"activation", "current_task", "current_spec", "git_diff", "validated_context_cache"},
             )
             self.assertTrue(scope["excluded_paths"])
+            self.assertEqual(
+                manifest["required_read_order"],
+                ["AGENTS.md", "TUSK_TEST_SPEC.md", "ERROR_CODES.md"],
+            )
 
     def test_stage_never_overwrites_migration(self):
         with tempfile.TemporaryDirectory() as temp:

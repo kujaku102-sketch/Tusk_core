@@ -44,15 +44,15 @@
     },
     {
       "path": "tests/test_workspace_migrator.py",
-      "sha256": "672b70a5e8ff6253366ae5de3381d092af488264d8e38ef6cebfc45b5d3e0109"
+      "sha256": "e19c030a47bbc0031de0637491718205f4c4cdd7393240935cf3aeb4d4650dd6"
     },
     {
       "path": "tools/workspace_migrator.py",
-      "sha256": "cb5179ee47566256006e952cd82642119844882830793172a372cbfa13ceef98"
+      "sha256": "0aeb9ffcdeb9e4992bed5a3da3efd2a7b0ad99048a92d164a8cc2588af06e6b1"
     },
     {
       "path": "WORKSPACE_MIGRATOR_SPEC.md",
-      "sha256": "56d4be2038909d32ed5b98fd1f6af5e3ddc5d4fd957046b91c6204a6ec79beb1"
+      "sha256": "47d19e71ccda3d05d401a3d1a141a0433bc21a9d24c46c7859e61e133dbe4afb"
     }
   ]
 }

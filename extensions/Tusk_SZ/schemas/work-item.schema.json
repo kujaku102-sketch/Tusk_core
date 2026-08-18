@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["schema_version", "work_id", "parent_project_id", "producer", "state", "objective", "allowed_paths", "forbidden_paths", "acceptance", "tests", "rework_count"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "work_id": {"type": "string", "minLength": 5},
+    "parent_project_id": {"type": "string", "minLength": 3},
+    "producer": {"const": "WKZ"},
+    "state": {"enum": ["planned", "running", "needs_review", "waiting_human", "needs_human_review", "completed", "abandoned"]},
+    "objective": {"type": "string", "minLength": 1},
+    "allowed_paths": {"type": "array", "items": {"type": "string"}},
+    "forbidden_paths": {"type": "array", "items": {"type": "string"}},
+    "acceptance": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "tests": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "rework_count": {"type": "integer", "minimum": 0, "maximum": 3}
+  },
+  "additionalProperties": true
+}

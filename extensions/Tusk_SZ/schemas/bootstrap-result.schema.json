@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","required":["schema_version","program_id","mode","producer","workspace","project","checks","required_data","authentication","ok","status"],"properties":{"schema_version":{"const":1},"program_id":{"const":"TUSK_SZ_BOOTSTRAP"}},"additionalProperties":true}

@@ -6,6 +6,7 @@ from pathlib import Path
 
 
 MODULE_PATH = Path(__file__).resolve().parents[1] / "tools" / "extension_manager.py"
+ACTIVATION_EXAMPLE = Path(__file__).resolve().parents[2] / "work" / "settings" / "extensions.enabled.json.example"
 SPEC = importlib.util.spec_from_file_location("extension_manager", MODULE_PATH)
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
@@ -41,6 +42,14 @@ class ExtensionManagerTests(unittest.TestCase):
             root = Path(temp)
             (root / "Tusk_Broken").mkdir()
             self.assertEqual(MODULE.discover(root), ["Tusk_Broken"])
+
+    def test_activation_example_matches_registry_schema(self):
+        example = json.loads(ACTIVATION_EXAMPLE.read_text(encoding="utf-8"))
+        self.assertEqual(
+            set(example),
+            {"schema_version", "enabled_extensions", "disabled_extensions"},
+        )
+        self.assertEqual(MODULE.load_registry(ACTIVATION_EXAMPLE), example)
 
 
 if __name__ == "__main__":

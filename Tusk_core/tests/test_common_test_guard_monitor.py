@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
+import copy
 import hashlib
 import io
 import json
 import os
 import queue
+import sys
 import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
@@ -15,6 +17,9 @@ from unittest.mock import call, patch
 
 
 CORE_ROOT = Path(__file__).resolve().parents[1]
+TOOLS_ROOT = CORE_ROOT / "tools"
+if str(TOOLS_ROOT) not in sys.path:
+    sys.path.insert(0, str(TOOLS_ROOT))
 MONITOR = CORE_ROOT / "tools" / "test_guard_monitor.py"
 ERROR_CODES = CORE_ROOT / "ERROR_CODES.md"
 SPEC = spec_from_file_location("test_guard_monitor", MONITOR)
@@ -50,6 +55,7 @@ class TestCommonTestGuardMonitor(unittest.TestCase):
             "required_artifacts": [str(artifact)],
             "require_counts": require_counts,
             "require_id_set_sha256": require_ids,
+            "orchestration_gate": False,
         }
         contract_path = run / "test_contract.json"
         self.write_json(contract_path, contract)
@@ -247,14 +253,133 @@ class TestCommonTestGuardMonitor(unittest.TestCase):
         self.assertTrue(MODULE.minor_threshold_reached(20, 49, 100))
         self.assertTrue(MODULE.minor_threshold_reached(1, 50, 100))
 
-    def test_contract_requires_conditional_flags_and_nonempty_lists(self):
+    def test_contract_requires_conditional_flags_and_orchestration_gate(self):
         with tempfile.TemporaryDirectory() as temporary:
             case = self.make_run(Path(temporary))
+            for field in ("require_counts", "require_id_set_sha256", "orchestration_gate"):
+                with self.subTest(field=field):
+                    contract = dict(case["contract"])
+                    contract.pop(field)
+                    self.write_json(case["contract_path"], contract)
+                    with self.assertRaises(ValueError):
+                        MODULE.validate_contract(case["contract_path"], "unit")
+
+    def test_orchestration_gate_false_is_explicit_compatibility(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            case = self.make_run(Path(temporary))
+            contract = MODULE.validate_contract(case["contract_path"], "unit")
+            self.assertEqual(
+                MODULE.validate_orchestration_gate(case["workspace"], contract),
+                {"required": False, "status": "compatibility_false"},
+            )
+
+    def test_orchestration_gate_true_reruns_test_gate_and_binds_full_exact_receipt(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            case = self.make_run(Path(temporary))
+            snapshot_payload = {"algorithm": "sha256-path-snapshot-v1", "path_snapshot": [], "scope_paths": []}
+            snapshot_sha = MODULE.payload_sha256(snapshot_payload)
+            receipt = {
+                "schema_version": 3,
+                "receipt_type": "orchestration_validation",
+                "validator": "orchestration_evidence_validator_v3",
+                "work_id": "work",
+                "attempt_id": "attempt",
+                "generation": 0,
+                "target": "test_gate",
+                "evidence_log_path": "work/orchestration_evidence/fixture/events.jsonl",
+                "evidence_log_sha256": "a" * 64,
+                "evidence_sequence": 27,
+                "snapshot_identity_record_id": "R",
+                "snapshot_payload": snapshot_payload,
+                "snapshot_sha256": snapshot_sha,
+                "recovery_bundle_ref": None,
+                "selected_refs": {"result_identity_record_id": "R"},
+            }
+            receipt_sha = MODULE.payload_sha256(receipt)
             contract = dict(case["contract"])
-            contract.pop("require_counts")
+            contract["orchestration_gate"] = True
+            contract["orchestration_evidence"] = {
+                "workspace_root": str(case["workspace"]),
+                "work_id": "work",
+                "attempt_id": "attempt",
+                "target": "test_gate",
+                "validation_receipt": receipt,
+                "validation_receipt_sha256": receipt_sha,
+            }
             self.write_json(case["contract_path"], contract)
-            with self.assertRaises(ValueError):
-                MODULE.validate_contract(case["contract_path"], "unit")
+            validated = MODULE.validate_contract(case["contract_path"], "unit")
+            validator_result = {
+                "valid": True,
+                "state": "ready_for_test",
+                "work": "work",
+                "attempt": "attempt",
+                "target": "test_gate",
+                "generation": 0,
+                "validation_receipt_sha256": receipt_sha,
+                "current_snapshot_sha256": snapshot_sha,
+                "evidence_sequence": 27,
+                "selected_refs": {
+                    "result_identity_record_id": "R",
+                    "result_snapshot_sha256": snapshot_sha,
+                },
+                "validation_receipt": receipt,
+            }
+            with patch.object(MODULE, "validate_evidence_log", return_value=validator_result) as validator:
+                result = MODULE.validate_orchestration_gate(case["workspace"], validated)
+            validator.assert_called_once_with(case["workspace"], "work", "attempt", "test_gate")
+            self.assertEqual(result["status"], "validated")
+
+            for mutation in ("partial", "hash_only", "extra", "mutated", "outer_embedded_id", "design_receipt_target"):
+                bad = copy.deepcopy(contract)
+                evidence = bad["orchestration_evidence"]
+                if mutation == "partial":
+                    evidence.pop("validation_receipt")
+                elif mutation == "hash_only":
+                    evidence["validation_receipt"] = {"snapshot_sha256": snapshot_sha}
+                    evidence["validation_receipt_sha256"] = MODULE.payload_sha256(evidence["validation_receipt"])
+                elif mutation == "extra":
+                    evidence["result_identity_record_id"] = "R"
+                elif mutation == "mutated":
+                    evidence["validation_receipt"]["evidence_sequence"] = 28
+                elif mutation == "outer_embedded_id":
+                    evidence["work_id"] = "other-work"
+                else:
+                    evidence["target"] = "design_receipt"
+                self.write_json(case["contract_path"], bad)
+                with self.assertRaises(ValueError):
+                    MODULE.validate_contract(case["contract_path"], "unit")
+
+            self.write_json(case["contract_path"], contract)
+            validated = MODULE.validate_contract(case["contract_path"], "unit")
+            for mutation in ("actual_partial", "actual_extra", "actual_result_id", "actual_receipt_id"):
+                bad_result = copy.deepcopy(validator_result)
+                if mutation == "actual_partial":
+                    bad_result["validation_receipt"].pop("snapshot_payload")
+                elif mutation == "actual_extra":
+                    bad_result["validation_receipt"]["extra"] = True
+                elif mutation == "actual_result_id":
+                    bad_result["target"] = "design_receipt"
+                else:
+                    bad_result["validation_receipt"]["attempt_id"] = "other-attempt"
+                bad_result["validation_receipt_sha256"] = MODULE.payload_sha256(bad_result["validation_receipt"])
+                with patch.object(MODULE, "validate_evidence_log", return_value=bad_result):
+                    with self.assertRaises(ValueError):
+                        MODULE.validate_orchestration_gate(case["workspace"], validated)
+
+    def test_main_checks_orchestration_gate_before_registries_and_lock(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            case = self.make_run(Path(temporary))
+            with (
+                patch.object(MODULE, "validate_orchestration_gate", side_effect=ValueError("gate closed")) as gate,
+                patch.object(MODULE, "parse_error_registry") as errors,
+                patch.object(MODULE, "validate_registry") as registry,
+                patch.object(MODULE, "acquire_guard_lock") as lock,
+            ):
+                self.assertEqual(MODULE.main(case["args"]), 1)
+            gate.assert_called_once()
+            errors.assert_not_called()
+            registry.assert_not_called()
+            lock.assert_not_called()
 
     def test_path_validation_rejects_reparse_contract(self):
         with tempfile.TemporaryDirectory() as temporary:

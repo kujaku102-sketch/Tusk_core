@@ -1,4 +1,3 @@
-<!-- md-scope-document: COMMON -->
 # Tusk Core: start here
 
 1. AIは`AGENTS.md`、人間は`README.md`を読む。

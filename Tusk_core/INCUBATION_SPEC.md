@@ -1,4 +1,3 @@
-<!-- md-scope-document: COMMON -->
 # Incubation Queue (InQ)
 
 InQは、観測、改善候補、再利用候補、規則変更案を正本へ入れる前に保持する

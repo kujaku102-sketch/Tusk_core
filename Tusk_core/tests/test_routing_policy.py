@@ -4,7 +4,7 @@ import unittest
 
 
 DOC = Path(__file__).resolve().parents[1] / "ROUTING_POLICY.md"
-SPEC = Path(__file__).resolve().parents[1] / "specs" / "TCS-006_ROUTING_POLICY.md"
+SPEC = Path(__file__).resolve().parents[1] / "specs" / "ROUTING_POLICY_CONSOLIDATION.md"
 
 
 class RoutingPolicyTest(unittest.TestCase):
@@ -13,13 +13,14 @@ class RoutingPolicyTest(unittest.TestCase):
         cls.text = DOC.read_text(encoding="utf-8")
 
     def test_canonical_scope_and_sections(self):
-        self.assertTrue(self.text.startswith("<!-- md-scope-document: COMMON -->"))
+
         for heading in (
             "## Implementation Intensity",
             "## Skim classification",
             "## Provider routing and snapshot policy",
             "## MAX gate",
-            "## Execution Authority and Proposal Authority",
+            "## Authority boundary",
+            "## Failure analysis routing",
         ):
             self.assertIn(heading, self.text)
 
@@ -28,7 +29,10 @@ class RoutingPolicyTest(unittest.TestCase):
             re.findall(r"^\| `(LOW|MID|HIGH|MAX)` \|", self.text, re.MULTILINE)[:4],
             ["LOW", "MID", "HIGH", "MAX"],
         )
-        for field in ("provider_route:", "cache_input_ceiling_kib:", "snapshot_policy:"):
+        for field in (
+            "provider_route:", "cache_input_ceiling_kib:", "snapshot_policy:",
+            "max_activation_count:", "max_approved:", "max_approval_id:",
+        ):
             self.assertIn(field, self.text)
 
     def test_skim_output_is_complete(self):
@@ -48,12 +52,18 @@ class RoutingPolicyTest(unittest.TestCase):
     def test_max_gate_and_authority_guards(self):
         for value in (
             "recurrent_error_or_stop", "terra_mid_impractical",
-            "Only one automatic `MAX` activation", "needs_human_review",
-            "Execution Authority", "Proposal Authority",
-            "安全水準の低下提案は人間の明示承認なしに適用しない",
-            "Protected Surface", "個別Spec下限",
+            "must never be activated automatically", "explicit human approval",
+            "max_requires_explicit_human_approval", "needs_human_review",
+            "AUTHORITY_SEPARATION.md", "PROCESS_POLICY.md",
         ):
             self.assertIn(value, self.text)
+        self.assertNotIn("Only one automatic `MAX` activation", self.text)
+        authority = (DOC.parent / "AUTHORITY_SEPARATION.md").read_text(encoding="utf-8")
+        for value in (
+            "Process Levelの低下提案は人間の明示承認なしに適用しない",
+            "Protected Surface", "個別Spec下限",
+        ):
+            self.assertIn(value, authority)
 
     def test_spec_records_completion(self):
         value = SPEC.read_text(encoding="utf-8")

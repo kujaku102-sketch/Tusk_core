@@ -1,4 +1,3 @@
-<!-- md-scope-document: COMMON -->
 # Tusk Core sync policy
 
 Google Drive is a collaboration transport, not a distributed lock. Work from a

@@ -1,4 +1,3 @@
-<!-- md-scope-document: COMMON -->
 # Tusk Core: agent bootloader
 
 Tusk Coreはドメイン非依存の実装・テスト契約を提供する。製品規則、製品ソース、
@@ -20,8 +19,7 @@ Context Cacheから実行時に導出する。
 - 現在のGit branch、base、diff、ユーザー要求、現行Spec、テスト結果を境界とする。
 - Work Packetを作らない。指定外ファイルと無関係なユーザー変更を戻さない。
 - 同一ファイルへ複数writerを置かない。未承認の並列化、破壊操作、配布、秘密操作をしない。
-- `MAX_REWORK_COUNT = 3`。同じ失敗を盲目的に再実行しない。
-- `preflight_error`は安全範囲を変えない経路補正を1回だけ許可する。
+- 再作業、停止、再開は`PROCESS_POLICY.md`、テスト起動前の限定補正は`TEST_POLICY.md`を正本とする。
 
 ## Canonical references
 

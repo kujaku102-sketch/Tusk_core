@@ -1,4 +1,3 @@
-<!-- md-scope-document: COMMON -->
 # コンテキストキャッシュ共通仕様
 
 ## 1. 目的

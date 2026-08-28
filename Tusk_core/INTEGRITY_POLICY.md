@@ -1,4 +1,3 @@
-<!-- md-scope-document: COMMON -->
 # Integrity Policy
 
 SHA-256は配布物の同一性確認に使い、通常開発の承認には使わない。

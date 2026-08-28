@@ -3,62 +3,202 @@
   "root": "Tusk_core",
   "algorithm": "sha256",
   "managed_files": [
-    {"path":"AGENTS.md","sha256":"4af9926422425ccf24cc2b6014b1a32f5df5e389d6b9ec0f45ee503036ab055d"},
-    {"path":"AUTHORITY-MAP.json","sha256":"99c76a19f32537bd63036aa11a32c3d6b7e7793c17c0ffbc7c899b918f0bb8e8"},
-    {"path":"AUTHORITY_SEPARATION.md","sha256":"e98e0787530215ea2ec5309830f425a159e7dfbe0fac6a1b05c820643d48060f"},
-    {"path":"CONTEXT_CACHE_SPEC.md","sha256":"28421083be19134a1d9939010939c3906f345c29e393d59f141c638977729f45"},
-    {"path":"ERROR_CODES.md","sha256":"166b92fe186523fffb6c2ecd1c480009df031d3fe7c0e607884d00f84ff63762"},
-    {"path":"ERROR_CODES_SPEC.md","sha256":"c86afd0184ec9632f257f4ef36bee6cebd22ad3b784d3eb73af41ec4455b5738"},
-    {"path":"ERROR_POLICY.md","sha256":"242eafadeed9946fbd5548e149093cfc644ce44b17cd301a057587ae75ead6e8"},
-    {"path":"extensions.json","sha256":"ca4269c6586032d2166e1dc448e80859f88660121bc889c3f8e33971ec0803c2"},
-    {"path":"FOCUS_CACHE_SPEC.md","sha256":"b6108a71dc50ebefee2320653ca24f97ae9d02f939ce39396e69ba4b7a7909d4"},
-    {"path":"GENERAL.md","sha256":"2248b594de1e839653d6a0e7dea8ef07232243d67be5af81a592e3d465bae2da"},
-    {"path":"IMPLEMENTATION_INTENSITY.md","sha256":"82fb7c547d762362e75c7068672b3910eacebbba70e63880ea577d4b38fb41e8"},
-    {"path":"INCUBATION_SPEC.md","sha256":"4cd7bb01781a600f6763c7059e3ccb81d19939afe0e3ed27cc1bc418008d6abe"},
-    {"path":"INTEGRITY_POLICY.md","sha256":"f6b9adabaab5a41a0b2effa784c51b39d206549b0b399c936821fb158d1d63f3"},
-    {"path":"LIGHTWEIGHT_ROUTE.md","sha256":"82375363b8a0a82cbea3972450d8f81040ad30c317103e7ff418178d7b0d34b5"},
-    {"path":"PROCESS_LEVEL_CORRECTIONS.md","sha256":"282823597cc9e5c6fd3621377fe6a6959dd49f56bc0cbdae319d4afabbd96203"},
-    {"path":"PROCESS_LEVELS.md","sha256":"d8ceadd3dd322b16a3b20cda1cc0020b1ab36cf589ecb25dc43a0883971fcf90"},
-    {"path":"PROCESS_POLICY.md","sha256":"a67a38c900058db64ab8494db69d7c53fe3c4c7e98a6f691ca9c82da424b68d5"},
-    {"path":"PROTECTED_SURFACES.md","sha256":"82375363b8a0a82cbea3972450d8f81040ad30c317103e7ff418178d7b0d34b5"},
-    {"path":"README.md","sha256":"5f1314b27a1346841693aa383b2d07bab60653375e8741780ad5533da90a14d7"},
-    {"path":"requirements.txt","sha256":"117bb7857e2106917057761be56b51e26df4b9c0e3ebdbcf48a992e94534c6ac"},
-    {"path":"RISK_EVIDENCE.md","sha256":"82375363b8a0a82cbea3972450d8f81040ad30c317103e7ff418178d7b0d34b5"},
-    {"path":"ROUTING_POLICY.md","sha256":"85828b51720d23923295e8e28e26fa55f6622e556c998f2fa8e094ab8d75065d"},
-    {"path":"SKIM_DECISION.md","sha256":"82fb7c547d762362e75c7068672b3910eacebbba70e63880ea577d4b38fb41e8"},
-    {"path":"START-HERE.md","sha256":"4b6a09713884350011083f9f3bbe643aca7d560ca0383cc4707f41eac3a2801f"},
-    {"path":"SYNC_POLICY.md","sha256":"e75b41019c5091eaefef63a97026992ff7b8054be91936c8e069c8913bc78202"},
-    {"path":"TEST-MAP.json","sha256":"d2ce68b7d556a5a30869e4ce4912c7d54b656afe977311d70bc02de0edc89617"},
-    {"path":"TEST_POLICY.md","sha256":"0a6e5640b3b62e8ecc817ad00e7fa78349f7da5e6fd1e0c78a91fa5b48acd51d"},
-    {"path":"TEST_SELECTION.md","sha256":"679d0d3fdcf36244575792c61bd8e5fd5bf0a5fcadc58751992a74d39d131680"},
-    {"path":"tests/test_common_test_guard_monitor.py","sha256":"dd2fe3643bc48e6d84de3132a1b7e97b8a6c0117717b5735b2fdaa427b6a2473"},
-    {"path":"tests/test_authority_auditor.py","sha256":"a89f4ef8f95fff4d40c16334994b9eb4f7f8474c4ae388718ab159e69fe6a7f8"},
-    {"path":"tests/test_entry_documents_contract.py","sha256":"6cc7dda7c913e00229045793abb9ffa1411d1c927366316c63dd72839cf4c634"},
-    {"path":"tests/test_error_policy_contract.py","sha256":"4798600426b91010b9dbf02721d9324e91e21287cf72e72226b34eb266f245b1"},
-    {"path":"tests/test_extension_manager.py","sha256":"ad67c01101ae73b000f7aee008ddba272179f975f85a7cc716674455d5c98ee2"},
-    {"path":"tests/test_integrity_gate.py","sha256":"4b2e6678595ffee5933f15e5682b911fc7886a6e4e7cd2cee150344d4e569e5f"},
-    {"path":"tests/test_inq.py","sha256":"3d7ef02cdac21a488b236ff558ffa7813ffaa2a53cafce117862400f694a4648"},
-    {"path":"tests/test_landmine_cache.py","sha256":"9104a15f7c7be22425ab3bf9d0d777bf389ccbba8c9ecfcdc229b64dd2903d33"},
-    {"path":"tests/test_process_classifier.py","sha256":"f812d3f31dc5c41c1195d7a7a73f9caf09ed18ee0993a41977325d083404bf96"},
-    {"path":"tests/test_routing_policy.py","sha256":"3afdaff0270e28895a4eeb388810eae5f999c91d37ba1afb3c027c8ad096466a"},
-    {"path":"tests/test_simplified_operations_contract.py","sha256":"65a849a246864bb85dd37cf43bc8f73964cfc05f48c02033ef31c082ad7468db"},
-    {"path":"tests/test_tcs007_test_policy_contract.py","sha256":"bce5ca91ce373711daf34a9d4042d07a2623e1673df7fd5eb303264d70c0b8f1"},
-    {"path":"tests/test_tcs_contracts.py","sha256":"15ea09b163a2f84b61356e4d154d328ba7b8771e172d6431320c758d240af61c"},
-    {"path":"tests/test_test_selector.py","sha256":"a027a6c80b09661a05f0c5750975209e32547917f1c2c2723c8d2de438c8a4a1"},
-    {"path":"tests/test_tusk_manager.py","sha256":"430827d88c21b24b9500698e8169df966a730adf1912718dbf8833a86988f517"},
-    {"path":"tools/extension_manager.py","sha256":"e18982753a1e06618a1f241e95bbf02f83cecca84f29ed4b544c2882d3c189c5"},
-    {"path":"tools/authority_auditor.py","sha256":"1bb0f8fd8cd333da07004f1bf35b17065e83591f6e6a241140445b8c5c900c20"},
-    {"path":"tools/integrity_gate.py","sha256":"ee42de9d3a6872087e7daa7842b469e7d180b1d2183fb48315ecb6f5511aebb7"},
-    {"path":"tools/inq.py","sha256":"528ea7f2ef76d76429e7d10bb199d4962cad2a7b080c49593440e6edde7bdad8"},
-    {"path":"tools/landmine_cache.py","sha256":"1b21b38d213fc95dd9bb4bafec78edfe0e645fde2d835b34d140ce66fd999331"},
-    {"path":"tools/process_classifier.py","sha256":"b098c9b7676ff26d37337294428f82678a14b6ef234d6c5f1c1009f7c00933e0"},
-    {"path":"tools/test_guard_monitor.py","sha256":"02f0484d20e09c3afffa1e86036067c9f5a3678b0ec5aa5fcccddaf6bf92cf70"},
-    {"path":"tools/test_selector.py","sha256":"5d8bfbcf0e8d8f0bb28294b5938c6800200ee20a7e29f8da98075b6e454723e9"},
-    {"path":"tools/tusk_manager.py","sha256":"1c4c692cf357cf7117a3ab458f96881426f7e04552ec006ba80337fac961c790"}
+    {
+      "path": "AGENTS.md",
+      "sha256": "4a6533f6284041f8c0a1535039361eaeca50d96c63e044e0afe30ec46d8e7f11"
+    },
+    {
+      "path": "AUTHORITY-MAP.json",
+      "sha256": "99c76a19f32537bd63036aa11a32c3d6b7e7793c17c0ffbc7c899b918f0bb8e8"
+    },
+    {
+      "path": "AUTHORITY_SEPARATION.md",
+      "sha256": "b51d5ea4f5f3fcd301b5b3efbedb5668b09e72534fb4bb7e8b1c73c0f27aae03"
+    },
+    {
+      "path": "CONTEXT_CACHE_SPEC.md",
+      "sha256": "1f1d41f8bd8ce4c562bbce15f757702ca4cb24ffaeb452e9471593a4f4a30c3e"
+    },
+    {
+      "path": "ERROR_CODES.md",
+      "sha256": "a63b658b810d3bb3c11218c95f2bcc7f64aa5b8a0961cc6983c052b092900906"
+    },
+    {
+      "path": "ERROR_CODES_SPEC.md",
+      "sha256": "7cc059a9d2d1630e21dd1a26103963d33fecc2eb6134d7f623a3cb6f35397ff0"
+    },
+    {
+      "path": "ERROR_POLICY.md",
+      "sha256": "506058e9fbe81f27876b069654572682a7acd63f4de271446ff9ad1dd4c0fbc3"
+    },
+    {
+      "path": "extensions.json",
+      "sha256": "dea596fb4d0b06bd11b487cca62f372364f2cd1bcf36fed18459d5e1f7a02aba"
+    },
+    {
+      "path": "FOCUS_CACHE_SPEC.md",
+      "sha256": "3688b8e33eb117d44e803513c4b108f9e03b4b50054725a7fbd18056e043318f"
+    },
+    {
+      "path": "GENERAL.md",
+      "sha256": "00a44076d471abaa2115ac47b2b2ca839024176e187c3aea8d63199f5f44a459"
+    },
+    {
+      "path": "IMPLEMENTATION_INTENSITY.md",
+      "sha256": "b004880e4ba6204b7b283c865ff6d98ceb5d706cfaa2e881f7ea64b6e3c3cb25"
+    },
+    {
+      "path": "INCUBATION_SPEC.md",
+      "sha256": "13ba7077bb449882dba9c325b1dac2c81fbfc0c79ca3af0aeda939cbd44af2d1"
+    },
+    {
+      "path": "INTEGRITY_POLICY.md",
+      "sha256": "72cbfaed9f10903445bccca6a325b9b589d022c230e151f1d3a8fe15d8d485b3"
+    },
+    {
+      "path": "LIGHTWEIGHT_ROUTE.md",
+      "sha256": "6b7b2572d744b77e17bea5bb2a947e3ab488d746d04a22f8add7fbff28d8ce1a"
+    },
+    {
+      "path": "PROCESS_LEVEL_CORRECTIONS.md",
+      "sha256": "fb983970aaa458ac37fc04b812a3eeee4174795286e829b377cf72a93d01c7c2"
+    },
+    {
+      "path": "PROCESS_LEVELS.md",
+      "sha256": "0bd9f9b8bf7d22bf432b7eda0ad410c0356b7a441e0c0da8b78c976a04214aaf"
+    },
+    {
+      "path": "PROCESS_POLICY.md",
+      "sha256": "7521be754f77321203712b0f043224f47bc38a458180f0961059aaa013eb5289"
+    },
+    {
+      "path": "PROTECTED_SURFACES.md",
+      "sha256": "6b7b2572d744b77e17bea5bb2a947e3ab488d746d04a22f8add7fbff28d8ce1a"
+    },
+    {
+      "path": "README.md",
+      "sha256": "af49d95e9d606fd411a86efec5788999f82777e3becf56b3757c78c61329b14c"
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "117bb7857e2106917057761be56b51e26df4b9c0e3ebdbcf48a992e94534c6ac"
+    },
+    {
+      "path": "RISK_EVIDENCE.md",
+      "sha256": "6b7b2572d744b77e17bea5bb2a947e3ab488d746d04a22f8add7fbff28d8ce1a"
+    },
+    {
+      "path": "ROUTING_POLICY.md",
+      "sha256": "e183f2f92683b5db9a357d43626478b38ac2c9060cc888bf59a3ade3f61257c9"
+    },
+    {
+      "path": "SKIM_DECISION.md",
+      "sha256": "b004880e4ba6204b7b283c865ff6d98ceb5d706cfaa2e881f7ea64b6e3c3cb25"
+    },
+    {
+      "path": "START-HERE.md",
+      "sha256": "f2a54df16b94b26697bc92c35cd047954997631b886b05c3a098a46da1850803"
+    },
+    {
+      "path": "SYNC_POLICY.md",
+      "sha256": "132e29f2ebf2c136afb20e8762340257473644fca56de728ee8b4b3faeaf1f0c"
+    },
+    {
+      "path": "TEST-MAP.json",
+      "sha256": "b9c82113bf9fa3731419cc9533e88a7b81e52be046338d5b650c8d44f8817c59"
+    },
+    {
+      "path": "TEST_POLICY.md",
+      "sha256": "057a32af5b84479919f0c89c12f9b9db5e3d6bcd4d881e81845eb290edee7f8a"
+    },
+    {
+      "path": "TEST_SELECTION.md",
+      "sha256": "fd71ce266bf9f228ee3a73521a5f8d00bb8bfbbf67f3909c4b7e26f99b4e193e"
+    },
+    {
+      "path": "tests/test_common_test_guard_monitor.py",
+      "sha256": "b734f3902fa17382e1f5a782164b9894648bb7236df3f446943e6dca673835b3"
+    },
+    {
+      "path": "tests/test_authority_auditor.py",
+      "sha256": "a89f4ef8f95fff4d40c16334994b9eb4f7f8474c4ae388718ab159e69fe6a7f8"
+    },
+    {
+      "path": "tests/test_entry_documents_contract.py",
+      "sha256": "13bcdf9697c61a4b4fd9ee7130f8bddf4f28ed69b2ab85c36fd67a31ec93cd3c"
+    },
+    {
+      "path": "tests/test_error_policy_contract.py",
+      "sha256": "4798600426b91010b9dbf02721d9324e91e21287cf72e72226b34eb266f245b1"
+    },
+    {
+      "path": "tests/test_integrity_gate.py",
+      "sha256": "4b2e6678595ffee5933f15e5682b911fc7886a6e4e7cd2cee150344d4e569e5f"
+    },
+    {
+      "path": "tests/test_inq.py",
+      "sha256": "3d7ef02cdac21a488b236ff558ffa7813ffaa2a53cafce117862400f694a4648"
+    },
+    {
+      "path": "tests/test_landmine_cache.py",
+      "sha256": "9104a15f7c7be22425ab3bf9d0d777bf389ccbba8c9ecfcdc229b64dd2903d33"
+    },
+    {
+      "path": "tests/test_process_classifier.py",
+      "sha256": "7d3190dc0b6e99a36a10894aa318430ac1267c91e241677d9b8508950d4b83fd"
+    },
+    {
+      "path": "tests/test_routing_policy.py",
+      "sha256": "c7fca3e34bc2cb4cbeb85eaefba9cfb1d89b0f3310a6b60b807775dff01921d2"
+    },
+    {
+      "path": "tests/test_simplified_operations_contract.py",
+      "sha256": "29e2fcd0f3d0944b065ff0533531ec4b0e8c087f1797c1fb494ff7f2f6ebd0e0"
+    },
+    {
+      "path": "tests/test_test_policy_contract.py",
+      "sha256": "7820c1956c82952cfec8a3296f6d1a43a018075409f1f20c8b5b1ab60e42cca8"
+    },
+    {
+      "path": "tests/test_core_spec_contracts.py",
+      "sha256": "906661fb6d3cd53eeb144faad4b42f2efd80e7ae9e3fb3d1b6e26fffe91a8c94"
+    },
+    {
+      "path": "tests/test_test_selector.py",
+      "sha256": "a027a6c80b09661a05f0c5750975209e32547917f1c2c2723c8d2de438c8a4a1"
+    },
+    {
+      "path": "tools/authority_auditor.py",
+      "sha256": "1bb0f8fd8cd333da07004f1bf35b17065e83591f6e6a241140445b8c5c900c20"
+    },
+    {
+      "path": "tools/integrity_gate.py",
+      "sha256": "ee42de9d3a6872087e7daa7842b469e7d180b1d2183fb48315ecb6f5511aebb7"
+    },
+    {
+      "path": "tools/inq.py",
+      "sha256": "528ea7f2ef76d76429e7d10bb199d4962cad2a7b080c49593440e6edde7bdad8"
+    },
+    {
+      "path": "tools/landmine_cache.py",
+      "sha256": "1b21b38d213fc95dd9bb4bafec78edfe0e645fde2d835b34d140ce66fd999331"
+    },
+    {
+      "path": "tools/process_classifier.py",
+      "sha256": "b098c9b7676ff26d37337294428f82678a14b6ef234d6c5f1c1009f7c00933e0"
+    },
+    {
+      "path": "tools/test_guard_monitor.py",
+      "sha256": "50ac3efb5edae97d9fa5f9d2462ad25af4201581697611d02ee8f889f6ab75df"
+    },
+    {
+      "path": "tools/test_selector.py",
+      "sha256": "5d8bfbcf0e8d8f0bb28294b5938c6800200ee20a7e29f8da98075b6e454723e9"
+    }
   ],
   "omissions": [
     "DISTRIBUTION-MANIFEST.json is deliberately not self-hashed.",
     "Extensions are external siblings and are validated only after explicit activation.",
-    "work/, archive/, specs/, and generated caches are runtime, history, or development evidence and are not distributed."
+    "work/, archive/, specs/, and generated caches are outside managed_files; tracked history or development documents may still be present in the source distribution."
   ]
 }

@@ -2,16 +2,18 @@
   "schema_version": 1,
   "component": "Tusk_core",
   "focused_rules": [
-    {"patterns": ["tools/integrity_gate.py", "INTEGRITY_POLICY.md"], "tests": ["tests/test_integrity_gate.py"]},
+    {"patterns": ["tools/integrity_gate.py", "INTEGRITY_POLICY.md", "specs/DISTRIBUTION_MANIFEST_SYNCHRONIZATION.md"], "tests": ["tests/test_integrity_gate.py"]},
     {"patterns": ["tools/extension_manager.py", "extensions.json"], "tests": ["tests/test_extension_manager.py"]},
     {"patterns": ["tools/landmine_cache.py", "FOCUS_CACHE_SPEC.md"], "tests": ["tests/test_landmine_cache.py"]},
-    {"patterns": ["tools/test_guard_monitor.py", "ERROR_CODES.md"], "tests": ["tests/test_common_test_guard_monitor.py"]},
-    {"patterns": ["ERROR_POLICY.md", "ERROR_CODES_SPEC.md"], "tests": ["tests/test_error_policy_contract.py"]},
-    {"patterns": ["ROUTING_POLICY.md"], "tests": ["tests/test_routing_policy.py"]},
-    {"patterns": ["PROCESS_POLICY.md", "tools/process_classifier.py"], "tests": ["tests/test_process_classifier.py"]},
-    {"patterns": ["AUTHORITY-MAP.json", "tools/authority_auditor.py"], "tests": ["tests/test_authority_auditor.py"]},
-    {"patterns": ["INCUBATION_SPEC.md", "tools/inq.py"], "tests": ["tests/test_inq.py"]},
-    {"patterns": ["GENERAL.md", "AGENTS.md", "START-HERE.md", "README.md", "SYNC_POLICY.md", "TEST_POLICY.md", "TEST-MAP.json", "tools/test_selector.py"], "tests": ["tests/test_simplified_operations_contract.py", "tests/test_entry_documents_contract.py", "tests/test_test_selector.py", "tests/test_tcs007_test_policy_contract.py"]}
+    {"patterns": ["tools/test_guard_monitor.py", "tests/test_common_test_guard_monitor.py", "ERROR_CODES.md"], "tests": ["tests/test_common_test_guard_monitor.py"]},
+    {"patterns": ["ERROR_POLICY.md", "ERROR_CODES_SPEC.md", "specs/ERROR_POLICY_CONSOLIDATION.md"], "tests": ["tests/test_error_policy_contract.py"]},
+    {"patterns": ["ROUTING_POLICY.md", "specs/ROUTING_POLICY_CONSOLIDATION.md"], "tests": ["tests/test_routing_policy.py", "tests/test_orchestration_contract.py", "tests/test_orchestration_evidence_validator.py"]},
+    {"patterns": ["PROCESS_POLICY.md", "tools/process_classifier.py", "AUTHORITY_SEPARATION.md", "specs/PROCESS_POLICY_CONSOLIDATION.md"], "tests": ["tests/test_process_classifier.py", "tests/test_orchestration_contract.py", "tests/test_orchestration_evidence_validator.py"]},
+    {"patterns": ["specs/CORE_ROUTING_BASELINE.md", "specs/RISK_EVIDENCE.md", "specs/PROPOSAL_AUTHORITY_AND_SAFETY_APPEAL.md", "tests/test_core_spec_contracts.py"], "tests": ["tests/test_core_spec_contracts.py", "tests/test_routing_policy.py", "tests/test_process_classifier.py"]},
+    {"patterns": ["tools/orchestration_evidence_validator.py", "tests/test_orchestration_evidence_validator.py", "tools/orchestration_evidence_common.py", "tools/orchestration_evidence_log.py", "tests/test_orchestration_evidence_log.py", "specs/CORE_ORCHESTRATION_EVIDENCE_SPEC.md"], "tests": ["tests/test_routing_policy.py", "tests/test_orchestration_contract.py", "tests/test_process_classifier.py", "tests/test_simplified_operations_contract.py", "tests/test_entry_documents_contract.py", "tests/test_test_selector.py", "tests/test_test_policy_contract.py", "tests/test_orchestration_evidence_validator.py", "tests/test_orchestration_evidence_log.py", "tests/test_common_test_guard_monitor.py"]},
+    {"patterns": ["AUTHORITY-MAP.json", "tools/authority_auditor.py", "specs/SINGLE_AUTHORITY_AND_CREATION_GATE.md"], "tests": ["tests/test_authority_auditor.py"]},
+    {"patterns": ["INCUBATION_SPEC.md", "tools/inq.py", "specs/INCUBATION_QUEUE.md"], "tests": ["tests/test_inq.py"]},
+    {"patterns": ["GENERAL.md", "AGENTS.md", "START-HERE.md", "README.md", "SYNC_POLICY.md", "TEST_POLICY.md", "TEST-MAP.json", "tools/test_selector.py", "tests/test_orchestration_contract.py", "tests/test_test_policy_contract.py", "specs/TEST_POLICY_CONSOLIDATION.md", "specs/ENTRY_DOCUMENT_RESPONSIBILITY.md", "specs/SCOPE_AUTHORITY_RETIREMENT.md"], "tests": ["tests/test_simplified_operations_contract.py", "tests/test_entry_documents_contract.py", "tests/test_test_selector.py", "tests/test_test_policy_contract.py", "tests/test_orchestration_contract.py", "tests/test_orchestration_evidence_validator.py"]}
   ],
   "component_tests": ["tests/test_*.py"],
   "full_tests": ["tests/test_*.py"]

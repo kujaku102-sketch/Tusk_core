@@ -1,4 +1,3 @@
-<!-- md-scope-document: COMMON -->
 # TCS-002 Extension Knowledge
 
 状態: `FROZEN`

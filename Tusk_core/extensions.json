@@ -10,6 +10,53 @@
       "status": "operational",
       "scope": "domain-neutral",
       "requires": []
+    },
+    {
+      "id": "tusk_dtp",
+      "path": "../extensions/Tusk_DTP",
+      "entry": "../extensions/Tusk_DTP/AGENTS.md",
+      "manifest": "../extensions/Tusk_DTP/EXTENSION-MANIFEST.json",
+      "kind": "extension",
+      "status": "available_disabled",
+      "activation_required": true,
+      "scope": "DTP / IdTask adapter",
+      "requires": ["core"],
+      "notes": [
+        "Validate EXTENSION-MANIFEST.json and follow required_read_order before use.",
+        "Product source and historical cache validity are not verified by installation."
+      ]
+    },
+    {
+      "id": "tusk_sz",
+      "path": "../extensions/Tusk_SZ",
+      "entry": "../extensions/Tusk_SZ/AGENTS.md",
+      "manifest": "../extensions/Tusk_SZ/EXTENSION-MANIFEST.json",
+      "kind": "extension",
+      "status": "available_disabled",
+      "activation_required": true,
+      "scope": "Siege-Zeke development gateway, bootstrap, Drive sync, renderer / UI / E2E orchestration",
+      "requires": ["core"],
+      "notes": [
+        "Do not read or run this extension unless a local activation registry enables it and its extension manifest validates.",
+        "An explicit external product workspace is mandatory.",
+        "Read GLOBAL.json, project parent, and work-item child before product edits.",
+        "Installation and inspect results do not prove renderer, UI, E2E, or Drive synchronization."
+      ]
+    },
+    {
+      "id": "tusk_tauri",
+      "path": "../extensions/Tusk_Tauri",
+      "entry": "../extensions/Tusk_Tauri/AGENTS.md",
+      "manifest": "../extensions/Tusk_Tauri/EXTENSION-MANIFEST.json",
+      "kind": "extension",
+      "status": "available_disabled",
+      "activation_required": true,
+      "scope": "Rust / Tauri desktop GUI runtime, build orchestration and tool packaging adapter",
+      "requires": ["core"],
+      "notes": [
+        "Validate EXTENSION-MANIFEST.json and follow required_read_order before use.",
+        "Requires Node.js and Rust toolchain on host system."
+      ]
     }
   ]
 }

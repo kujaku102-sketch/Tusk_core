@@ -18,6 +18,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Iterable, TextIO
 
+try:
+    from orchestration_evidence_validator import validate_evidence_log
+except ModuleNotFoundError:
+    from tools.orchestration_evidence_validator import validate_evidence_log
+try:
+    from orchestration_evidence_common import canonical_json_bytes, payload_sha256, safe_workspace_root, snapshot_identity
+except ModuleNotFoundError:
+    from tools.orchestration_evidence_common import canonical_json_bytes, payload_sha256, safe_workspace_root, snapshot_identity
+
 
 FORCE_CODES = {
     "F000", "F001", "F002", "F003", "F004", "F005", "F020", "F021", "F022", "F023", "F024", "F025", "F026",
@@ -25,6 +34,40 @@ FORCE_CODES = {
     "F080", "F081", "F082", "F083", "F084", "F100", "F101", "F102", "F103", "F120", "F121", "F122", "F123",
     "F124", "F140", "F141", "F142", "F160", "F161", "F162", "F163", "F180", "F181", "F182",
 }
+ORCHESTRATION_RECEIPT_FIELDS = {
+    "schema_version", "receipt_type", "validator", "work_id", "attempt_id",
+    "generation", "target", "evidence_log_path", "evidence_log_sha256",
+    "evidence_sequence", "snapshot_identity_record_id", "snapshot_payload",
+    "snapshot_sha256", "recovery_bundle_ref", "selected_refs",
+}
+
+
+def _validate_orchestration_receipt_shape(receipt: Any) -> None:
+    if not isinstance(receipt, dict) or set(receipt) != ORCHESTRATION_RECEIPT_FIELDS:
+        raise ValueError("exact orchestration validation receipt required")
+    if receipt.get("schema_version") != 3 or receipt.get("receipt_type") != "orchestration_validation" or receipt.get("validator") != "orchestration_evidence_validator_v3":
+        raise ValueError("invalid orchestration receipt type")
+    for field in ("work_id", "attempt_id", "evidence_log_path", "snapshot_identity_record_id"):
+        if not isinstance(receipt.get(field), str) or not receipt[field]:
+            raise ValueError(f"invalid orchestration receipt {field}")
+    if receipt.get("target") != "test_gate":
+        raise ValueError("orchestration receipt target must be test_gate")
+    for field in ("evidence_log_sha256", "snapshot_sha256"):
+        value = receipt.get(field)
+        if not isinstance(value, str) or not SHA256_RE.fullmatch(value) or value != value.lower():
+            raise ValueError(f"invalid orchestration receipt {field}")
+    if type(receipt.get("generation")) is not int or receipt["generation"] < 0 or type(receipt.get("evidence_sequence")) is not int or receipt["evidence_sequence"] < 0:
+        raise ValueError("invalid orchestration receipt counters")
+    if not isinstance(receipt.get("snapshot_payload"), dict) or not isinstance(receipt.get("selected_refs"), dict):
+        raise ValueError("full orchestration receipt payload required")
+    if receipt.get("recovery_bundle_ref") is not None and (not isinstance(receipt["recovery_bundle_ref"], str) or not receipt["recovery_bundle_ref"]):
+        raise ValueError("invalid orchestration recovery bundle reference")
+    try:
+        computed_snapshot = snapshot_identity(receipt["snapshot_payload"])
+    except Exception as error:
+        raise ValueError("invalid orchestration receipt snapshot payload") from error
+    if computed_snapshot != receipt["snapshot_sha256"]:
+        raise ValueError("orchestration receipt snapshot hash mismatch")
 MINOR_CODES = {
     "M000", "M001", "M002", "M020", "M021", "M040", "M041", "M060", "M061", "M080", "M081", "M100", "M101",
     "M120", "M140", "M141", "M160", "M180",
@@ -263,7 +306,7 @@ def validate_contract(path: Path, run_id: str) -> dict[str, Any]:
     contract = stable_load_json(path)
     required = {
         "schema_version", "run_id", "started_at_utc", "required_check_ids", "expected_exit_codes", "minor_total_units",
-        "required_artifacts", "require_counts", "require_id_set_sha256",
+        "required_artifacts", "require_counts", "require_id_set_sha256", "orchestration_gate",
     }
     if contract.get("schema_version") != 1 or contract.get("run_id") != run_id or not required <= contract.keys():
         raise ValueError("invalid test contract")
@@ -283,9 +326,80 @@ def validate_contract(path: Path, run_id: str) -> dict[str, Any]:
         raise ValueError("invalid required_artifacts")
     if not isinstance(contract["require_counts"], bool) or not isinstance(contract["require_id_set_sha256"], bool):
         raise ValueError("invalid conditional evidence flags")
+    if not isinstance(contract["orchestration_gate"], bool):
+        raise ValueError("orchestration_gate boolean required")
+    orchestration = contract.get("orchestration_evidence")
+    if contract["orchestration_gate"]:
+        expected_fields = {
+            "workspace_root", "work_id", "attempt_id", "target",
+            "validation_receipt", "validation_receipt_sha256",
+        }
+        if not isinstance(orchestration, dict) or set(orchestration) != expected_fields:
+            raise ValueError("exact orchestration evidence contract required")
+        if not isinstance(orchestration["workspace_root"], str) or not Path(orchestration["workspace_root"]).is_absolute():
+            raise ValueError("absolute orchestration workspace root required")
+        for field in ("work_id", "attempt_id"):
+            if not isinstance(orchestration[field], str) or not orchestration[field]:
+                raise ValueError(f"invalid orchestration {field}")
+        if orchestration["target"] != "test_gate":
+            raise ValueError("orchestration target must be test_gate")
+        if not isinstance(orchestration["validation_receipt"], dict):
+            raise ValueError("full orchestration validation receipt required")
+        _validate_orchestration_receipt_shape(orchestration["validation_receipt"])
+        embedded = orchestration["validation_receipt"]
+        if embedded["work_id"] != orchestration["work_id"] or embedded["attempt_id"] != orchestration["attempt_id"] or embedded["target"] != orchestration["target"]:
+            raise ValueError("outer and embedded orchestration IDs differ")
+        receipt_sha = orchestration["validation_receipt_sha256"]
+        if not isinstance(receipt_sha, str) or not SHA256_RE.fullmatch(receipt_sha) or receipt_sha != receipt_sha.lower():
+            raise ValueError("invalid orchestration validation_receipt_sha256")
+        if payload_sha256(orchestration["validation_receipt"]) != receipt_sha:
+            raise ValueError("embedded orchestration receipt hash mismatch")
+    elif orchestration is not None:
+        raise ValueError("orchestration_evidence must be absent or null when gate is false")
     contract["_started_epoch"] = started.timestamp()
     contract["_sha256"] = sha256_file(path)
     return contract
+
+
+def validate_orchestration_gate(workspace: Path, contract: dict[str, Any]) -> dict[str, Any]:
+    if contract["orchestration_gate"] is False:
+        return {"required": False, "status": "compatibility_false"}
+    expected = contract["orchestration_evidence"]
+    orchestration_root = safe_workspace_root(expected["workspace_root"])
+    guard_workspace = safe_workspace_root(workspace)
+    if orchestration_root != guard_workspace and orchestration_root != guard_workspace.parent:
+        raise ValueError("orchestration workspace must be guard workspace or its direct parent")
+    result = validate_evidence_log(
+        orchestration_root,
+        expected["work_id"],
+        expected["attempt_id"],
+        expected["target"],
+    )
+    if result.get("valid") is not True or result.get("state") != "ready_for_test":
+        raise ValueError("orchestration validator did not open the gate")
+    receipt = result.get("validation_receipt")
+    _validate_orchestration_receipt_shape(receipt)
+    if result.get("work") != expected["work_id"] or result.get("attempt") != expected["attempt_id"] or result.get("target") != expected["target"]:
+        raise ValueError("validator result IDs differ from outer contract")
+    if receipt["work_id"] != expected["work_id"] or receipt["attempt_id"] != expected["attempt_id"] or receipt["target"] != expected["target"]:
+        raise ValueError("actual receipt IDs differ from outer contract")
+    if payload_sha256(receipt) != result.get("validation_receipt_sha256"):
+        raise ValueError("orchestration validation receipt hash mismatch")
+    if payload_sha256(receipt) != expected["validation_receipt_sha256"]:
+        raise ValueError("orchestration receipt digest differs from contract")
+    if canonical_json_bytes(receipt) != canonical_json_bytes(expected["validation_receipt"]):
+        raise ValueError("orchestration full receipt differs from validator output")
+    if result.get("validation_receipt_sha256") != expected["validation_receipt_sha256"]:
+        raise ValueError("orchestration validator receipt hash differs")
+    return {
+        "required": True,
+        "status": "validated",
+        "validation_receipt_sha256": result["validation_receipt_sha256"],
+        "attempt_id": result["attempt"],
+        "target": "test_gate",
+        "generation": result["generation"],
+        "evidence_sequence": result["evidence_sequence"],
+    }
 
 
 def validate_registry(path: Path, run_id: str) -> list[dict[str, Any]]:
@@ -908,8 +1022,9 @@ def main(argv: list[str] | None = None) -> int:
     try:
         workspace, _, output_dir, done_file, fallback = validate_paths(args)
         writer = SafeWriter(output_dir, fallback)
-        error_registry = parse_error_registry(args.error_registry.resolve())
         contract = validate_contract(args.test_contract.resolve(), args.run_id)
+        orchestration_validation = validate_orchestration_gate(workspace, contract)
+        error_registry = parse_error_registry(args.error_registry.resolve())
         processes = validate_registry(args.process_registry.resolve(), args.run_id)
         if args.pid_policy == "supervisor_required_until_done" and not any(item["role"] == "supervisor" for item in processes):
             raise ValueError("supervisor identity required")
@@ -927,7 +1042,7 @@ def main(argv: list[str] | None = None) -> int:
             _write_monitor_error(writer, output_dir, exc, processes)
         return 1
     events_path = output_dir / "guard_events.jsonl"
-    writer.jsonl(events_path, {"event": "started", "run_id": args.run_id, "checked_at_utc": utc_now()})
+    writer.jsonl(events_path, {"event": "started", "run_id": args.run_id, "orchestration_gate": orchestration_validation, "checked_at_utc": utc_now()})
     excluded = [output_dir, fallback, done_file, args.test_contract.resolve(), args.process_registry.resolve()]
     if args.luna_task_file:
         excluded.append(args.luna_task_file.resolve(strict=False))

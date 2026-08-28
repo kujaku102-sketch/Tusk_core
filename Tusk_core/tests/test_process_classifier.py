@@ -21,7 +21,7 @@ def valid_record():
         "risk_evidence": {
             "failure_frequency": "none", "ambiguity": "low", "blast_radius": "local",
             "known_solution_confidence": "high", "dependency_volatility": "low",
-            "rollback_difficulty": "easy", "evidence_refs": ["spec:TCS-005"],
+            "rollback_difficulty": "easy", "evidence_refs": ["spec:PROCESS_POLICY_CONSOLIDATION"],
         },
         "lightweight_route": {
             "implementation_intensity": "LOW", "scope_bounded": True,

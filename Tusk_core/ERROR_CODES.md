@@ -1,4 +1,3 @@
-<!-- md-scope-document: COMMON -->
 # Tusk Core error registry
 
 This is the canonical parser-readable registry. `F` stops the guarded run; `M` records a non-fatal issue. `F182` is reserved for an interactive user stop and must be created by the guard console, not forged in a log.

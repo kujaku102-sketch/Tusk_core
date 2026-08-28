@@ -1,4 +1,3 @@
-<!-- md-scope-document: COMMON -->
 # Tusk Core
 
 Tusk Coreは、製品固有ルールを持たない実装・テスト安全基盤。製品機能は有効化した

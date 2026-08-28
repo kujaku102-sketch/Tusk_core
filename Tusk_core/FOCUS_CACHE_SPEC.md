@@ -1,4 +1,3 @@
-<!-- md-scope-document: COMMON -->
 # Focus Cache: 地雷記録
 
 ## 目的

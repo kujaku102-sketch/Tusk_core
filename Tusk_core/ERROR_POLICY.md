@@ -1,4 +1,3 @@
-<!-- md-scope-document: COMMON -->
 # Error policy
 
 エラーコードの人間向け正本。機械が読む具体的なコード一覧と互換表は

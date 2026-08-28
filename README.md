@@ -21,7 +21,7 @@ Pop-Location
 python Tusk_sharpener/sharpener.py check --target Tusk_core --workspace .
 ```
 
-製品コード、認証キー、実行Cache、archiveは同梱しない。Extensionは明示的に導入・有効化したものだけを読む。
+製品コード、認証キー、実行Cacheは同梱しない。`Tusk_core/archive/`には追跡対象として明示された凍結仕様だけを含む。Extensionは明示的に導入・有効化したものだけを読む。
 
 ## Runtime adapters
 

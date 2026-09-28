@@ -428,8 +428,8 @@ def validate_registry(path: Path, run_id: str) -> list[dict[str, Any]]:
 def validate_luna_task(args: argparse.Namespace, run_dir: Path) -> dict[str, Any] | None:
     if not args.notify_codex_cli:
         return None
-    if args.codex_model != "gpt-5.6-luna" or args.codex_reasoning_effort != "low" or not 1000 <= args.luna_log_limit_chars <= 12000:
-        raise ValueError("fixed Luna contract mismatch")
+    if not args.codex_model or args.codex_reasoning_effort != "low" or not 1000 <= args.luna_log_limit_chars <= 12000:
+        raise ValueError("analysis provider contract mismatch")
     if args.codex_cli_timeout_seconds <= 0 or not args.luna_thread_id or args.luna_task_file is None:
         raise ValueError("verified Luna task contract required")
     if not args.luna_task_file.is_absolute() or path_has_reparse(args.luna_task_file, args.workspace):
@@ -965,7 +965,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--luna-thread-id")
     parser.add_argument("--luna-log-limit-chars", type=int, default=12000)
     parser.add_argument("--codex-exe", default="codex")
-    parser.add_argument("--codex-model", default="gpt-5.6-luna")
+    parser.add_argument("--codex-model", default=os.environ.get("TUSK_CODEX_ANALYSIS_MODEL"))
     parser.add_argument("--codex-reasoning-effort", default="low")
     parser.add_argument("--codex-cli-timeout-seconds", type=int, default=300)
     return parser.parse_args(argv)

@@ -135,7 +135,7 @@ class TestCommonTestGuardMonitor(unittest.TestCase):
         })
         args = case["args"]
         args.remove("--no-notify-codex-cli")
-        args.extend(["--notify-codex-cli", "--luna-task-file", str(task), "--luna-thread-id", "luna-id"])
+        args.extend(["--notify-codex-cli", "--codex-model", "adapter-selected-model", "--luna-task-file", str(task), "--luna-thread-id", "luna-id"])
 
     def test_run_id_validation_rejects_traversal(self):
         self.assertFalse(bool(MODULE.RUN_ID_RE.fullmatch("../bad")))
@@ -660,7 +660,7 @@ class TestCommonTestGuardMonitor(unittest.TestCase):
             prompt, response, status = root / "prompt", root / "response", root / "status"
             prompt.write_text("x", encoding="utf-8")
             with patch.object(MODULE.shutil, "which", return_value="codex"), patch.object(MODULE.subprocess, "run", side_effect=MODULE.subprocess.TimeoutExpired("codex", 1)):
-                result = MODULE.notify_codex_cli(prompt_path=prompt, response_path=response, notify_status_path=status, session_id="id", model="gpt-5.6-luna", reasoning_effort="low", codex_exe="codex", timeout_seconds=1)
+                result = MODULE.notify_codex_cli(prompt_path=prompt, response_path=response, notify_status_path=status, session_id="id", model="adapter-selected-model", reasoning_effort="low", codex_exe="codex", timeout_seconds=1)
             self.assertEqual(result["status"], "timeout")
             self.assertEqual(json.loads(status.read_text(encoding="utf-8"))["status"], "timeout")
 

@@ -51,7 +51,7 @@ class RoutingPolicyTest(unittest.TestCase):
 
     def test_max_gate_and_authority_guards(self):
         for value in (
-            "recurrent_error_or_stop", "terra_mid_impractical",
+            "recurrent_error_or_stop", "high_route_impractical",
             "must never be activated automatically", "explicit human approval",
             "max_requires_explicit_human_approval", "needs_human_review",
             "AUTHORITY_SEPARATION.md", "PROCESS_POLICY.md",

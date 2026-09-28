@@ -17,10 +17,10 @@ Implementation Intensity classifies only technical implementation difficulty. It
 
 | Level | Technical difficulty | Default implementation | Required review | Cache input ceiling |
 |---|---|---|---|---:|
-| `LOW` | Text, constants, isolated Markdown, or a mechanically bounded edit | `Luna/high` | `Terra/mid` | 8 KiB |
-| `MID` | Bounded logic in one feature with established interfaces | `Luna/Ultra` | `Sol/low` | 8 KiB |
-| `HIGH` | Complex logic, multiple internal dependencies, concurrency, or difficult diagnosis | `Terra/mid` | `Sol/mid` | 16 KiB |
-| `MAX` | Exceptional implementation requiring the most capable route and focused review | highest-capability implementation route | highest-capability focused review | 24 KiB |
+| `LOW` | Text, constants, isolated Markdown, or a mechanically bounded edit | Runtime Adapter `implementation.LOW` | `review.LOW` | 8 KiB |
+| `MID` | Bounded logic in one feature with established interfaces | Runtime Adapter `implementation.MID` | `review.MID` | 8 KiB |
+| `HIGH` | Complex logic, multiple internal dependencies, concurrency, or difficult diagnosis | Runtime Adapter `implementation.HIGH` | `review.HIGH` | 16 KiB |
+| `MAX` | Exceptional implementation requiring the most capable route and focused review | Runtime Adapter `implementation.MAX` | `review.MAX` | 24 KiB |
 
 Implementation Intensity owns only technical implementation difficulty, implementation-provider routing, and implementation context/cache volume. Process Level independently owns impact, protected surfaces, safety procedure, approval gates, rollback requirements, and minimum test scope.
 
@@ -42,7 +42,7 @@ cache_input_ceiling_kib: 8 | 16 | 24 | null
 max_activation_count: <non-negative integer or null>
 max_approved: true | false | null
 max_approval_id: <approval id or null>
-max_trigger: null | recurrent_error_or_stop | terra_mid_impractical
+max_trigger: null | recurrent_error_or_stop | high_route_impractical
 max_evidence: null | <artifact or observation reference>
 process_level: <value selected under PROCESS_POLICY.md or null>
 process_level_reason: <impact and safety evidence or null>
@@ -80,7 +80,7 @@ accepted/rejected envelope、record replay・conflict、latest-validの更新、
 
 Intensityの既定Providerは上表から選ぶ。Process Level、テスト数、作業優先度をProvider選択の代用にしない。Providerを置換してもIntensity、Process Level、安全下限、承認条件は変わらない。
 
-`Luna/high`または`Luna/Ultra`が利用できない場合は`Terra/mid`へ一度だけ切り替えられる。Provider利用可否の確認は作業単位で一度だけとし、接続失敗を反復しない。Provider変更自体は`rework_count`へ算入しない。レビューProviderを変更する場合も同等以上の読み取り専用レビュー能力を必要とし、実装担当による自己レビューへ置換しない。
+既定Providerが利用できない場合はRuntime Adapterで設定された代替Providerへ一度だけ切り替えられる。Provider利用可否の確認は作業単位で一度だけとし、接続失敗を反復しない。Provider変更自体は`rework_count`へ算入しない。レビューProviderを変更する場合も同等以上の読み取り専用レビュー能力を必要とし、実装担当による自己レビューへ置換しない。
 
 | Intensity | Snapshot policy |
 |---|---|
@@ -93,13 +93,11 @@ Snapshot policyは入力候補の選定であり、流し見担当自身がキ�
 
 ## Provider operational roles
 
-- `Sol`: Spec作成、変更許可、`MAX/HIGH/MID`のレビュー、失敗原因の確定、限定修正指示、最終受入を担当する。
-- `Terra/mid`: `HIGH`実装、`LOW`レビュー、Luna実装Provider不在時の代替を担当する。
-- `Luna/low`: 流し見と失敗ログ分析だけを行い、編集、テスト、再起動、停止操作、状態解除を行わない。
-- `Luna/high`: `LOW`の限定実装を担当する。
-- `Luna/Ultra`: `MID`の限定実装を担当する。
-- `Antigravity Flash-Lite`: `Luna/low`不在時の流し見・失敗ログ分析だけを担当し、編集しない。
-- `Luna/mid`: `HIGH/MAX`の担当交代時だけ、選択済み一時snapshotを引継ぎ用に圧縮する。新しい原因、修正案、成功判定を追加しない。
+- `lead`: Spec作成、変更許可、失敗原因の確定、限定修正指示、最終受入を担当する。
+- `implementation.<Intensity>`: 指定強度と変更可能範囲の限定実装を担当する。
+- `review.<Intensity>`: 指定強度の差分レビューを担当し、自己レビューへ置換しない。
+- `skim`と`failure_analysis`: 読み取り専用とし、編集、テスト、再起動、停止操作、状態解除を行わない。
+- `handoff`: 担当交代時だけ、選択済み一時snapshotを引継ぎ用に圧縮する。新しい原因、修正案、成功判定を追加しない。
 
 ## MAX gate
 
@@ -108,7 +106,7 @@ Snapshot policyは入力候補の選定であり、流し見担当自身がキ�
 Automatic classification as `MAX` is permitted only when current evidence establishes at least one trigger:
 
 1. `recurrent_error_or_stop`: errors or forced stops recur enough to show the current route is not converging; or
-2. `terra_mid_impractical`: implementation is technically impractical for `Terra/mid` to perform reliably.
+2. `high_route_impractical`: implementation is technically impractical for the configured `HIGH` route to perform reliably.
 
 The record must contain the trigger, evidence, previous intensity, and work ID. A preference for a stronger model, vague low confidence, schedule pressure, or Process Level alone is invalid.
 
@@ -124,9 +122,9 @@ Approval permits only the stated MAX implementation and its approved verificatio
 
 ## Failure analysis routing
 
-解析Providerは失敗時だけ読み取り専用で起動する。`Luna/low`を第一候補、`Antigravity Flash-Lite`を一度だけ使える代替とし、接続を反復しない。入力は現行Spec、対象差分、構造化された失敗証拠へ限定する。Core guardの具体的なCLI、入力ファイル、通知結果は`tools/test_guard_monitor.py`を機械実装正本とする。
+解析Providerは失敗時だけ読み取り専用で起動する。Runtime Adapterの`failure_analysis`を第一候補、設定済み代替Providerを一度だけ使える代替とし、接続を反復しない。入力は現行Spec、対象差分、構造化された失敗証拠へ限定する。Core guardの具体的なCLI、入力ファイル、通知結果は`tools/test_guard_monitor.py`を機械実装正本とする。
 
-解析結果は原因候補と修正候補であり、実装開始、状態解除、成功、完成を単独で決定しない。`Sol`が実ログと照合して原因を確定し、必要な場合だけImplementation Intensityを一段階上げた限定修正を決める。MAXへ到達する場合はMAX gateを適用する。成功時、軽度問題だけの時、人間による正常停止時は解析Providerを起動しない。
+解析結果は原因候補と修正候補であり、実装開始、状態解除、成功、完成を単独で決定しない。`lead`が実ログと照合して原因を確定し、必要な場合だけImplementation Intensityを一段階上げた限定修正を決める。MAXへ到達する場合はMAX gateを適用する。成功時、軽度問題だけの時、人間による正常停止時は解析Providerを起動しない。
 
 ## Mandatory stop and prohibited actions
 

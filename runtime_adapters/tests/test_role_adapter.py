@@ -18,7 +18,7 @@ class RoleAdapterTests(unittest.TestCase):
 
     def test_codex_current_high_route(self):
         result = role_adapter.resolve("codex", "implementation", "HIGH")
-        self.assertEqual("gpt-5.6-terra", result["model"])
+        self.assertEqual("gpt-6-sol", result["model"])
         self.assertEqual("medium", result["reasoning_effort"])
         self.assertEqual("write_limited", result["access"])
 

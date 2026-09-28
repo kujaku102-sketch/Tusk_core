@@ -4,7 +4,7 @@
 
 同梱Adapter:
 
-- `codex`: 現行Luna / Terra / Sol割当を論理ロールへ変換する。
+- `codex`: 現行Luna / Sol / Astra割当を論理ロールへ変換する。
 - `claude`: Tusk独自aliasのFable（開発指揮・最上位レビュー）/ Opus（実装）/ Sonnet（低推論）を論理ロールへ変換する。
 
 これらは互換対象を示す識別名であり、OpenAI、Anthropicその他のモデル提供者による提携、認定、推奨を示さない。
@@ -16,3 +16,5 @@ python role_adapter.py resolve --adapter claude --role review --intensity MAX
 ```
 
 出力はbinding情報だけで、Provider起動や権限変更は行わない。`model_env`で指定された環境変数があれば既定aliasを置換する。
+
+Core監視ツールから失敗解析を通知する場合は、`failure_analysis`を解決した`model`を`--codex-model`で渡す。未指定時は`TUSK_CODEX_ANALYSIS_MODEL`を参照し、どちらもない場合は通知を開始しない。

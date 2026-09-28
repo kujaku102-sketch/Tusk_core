@@ -33,20 +33,20 @@ SHA-256の適用範囲と開発キーは`INTEGRITY_POLICY.md`を正本とする�
 
 ## Implementation IntensityとProcess Level
 
-経路分類は`ROUTING_POLICY.md`、Process Level・機械補正・Protected Surface・軽量ルートは`PROCESS_POLICY.md`を正本とする。作業開始時は`Luna/low`が設計図、キャッシュ、対象差分を読み取り専用で流し見し、実装難易度`implementation_intensity`と影響・安全工程`process_level`を独立判定する。`Luna/low`が利用できない場合だけ`Antigravity Flash-Lite`へ切り替える。両方とも編集、テスト、再起動、停止操作を行わない。
+経路分類は`ROUTING_POLICY.md`、Process Level・機械補正・Protected Surface・軽量ルートは`PROCESS_POLICY.md`を正本とする。作業開始時はRuntime Adapterの`skim`が設計図、キャッシュ、対象差分を読み取り専用で流し見し、実装難易度`implementation_intensity`と影響・安全工程`process_level`を独立判定する。代替ProviderもRuntime Adapterで解決する。流し見担当は編集、テスト、再起動、停止操作を行わない。
 
 流し見結果は最低限、`implementation_intensity`、`process_level`、`affected_paths`、`risk_triggers`、`required_tests`、`snapshot_policy`、`confidence`、`needs_review`を返す。根拠不足、`confidence < 0.8`、計画外パスへの拡大は`needs_review`とし、二軸を再判定する。一方の上昇から他方を自動推定しない。
 
 | Implementation Intensity | 実装・レビュー |
 |---|---|
 | `MAX` | 例外的な最高能力実装・集中レビュー |
-| `HIGH` | `Terra/mid`実装、`Sol/mid`レビュー |
-| `MID` | `Luna/Ultra`実装、`Sol/low`レビュー |
-| `LOW` | `Luna/high`実装、`Terra/mid`レビュー |
+| `HIGH` | Runtime Adapterの`implementation.HIGH`と`review.HIGH` |
+| `MID` | Runtime Adapterの`implementation.MID`と`review.MID` |
+| `LOW` | Runtime Adapterの`implementation.LOW`と`review.LOW` |
 
-`Luna/high`と`Luna/Ultra`は、開発指揮が指定した変更可能パスだけ編集できる。実装用Lunaが利用できない場合は`Terra/mid`へ切り替える。Provider確認は作業単位で1回とし、接続失敗を反復しない。Provider変更は再作業回数へ含めない。
+実装担当は開発指揮が指定した変更可能パスだけ編集できる。Provider不在時の代替はRuntime Adapterで解決する。Provider確認は作業単位で1回とし、接続失敗を反復しない。Provider変更は再作業回数へ含めない。
 
-通常は`LOW`、`MID`、`HIGH`だけを使う。`MAX`は再発するエラー・停止、または`Terra/mid`では信頼できる実装が困難だと根拠付きで判定した場合だけ、作業単位で1回だけ自動適用できる。`MAX`適用後の追加修正・再実装は、ソース編集やテスト前に`needs_human_review`へ停止し、人間の明示承認を得る。Process Levelだけを理由に`MAX`へ上げない。
+通常は`LOW`、`MID`、`HIGH`だけを使う。`MAX`は再発するエラー・停止、または構成済みの`HIGH`経路では信頼できる実装が困難だと根拠付きで判定した場合だけ、作業単位で1回だけ自動適用できる。`MAX`適用後の追加修正・再実装は、ソース編集やテスト前に`needs_human_review`へ停止し、人間の明示承認を得る。Process Levelだけを理由に`MAX`へ上げない。
 
 安全工程とテスト下限は`process_level:P0`〜`process_level:P4`から決める。外部アプリ操作は最低`process_level:P3`、配布・Installer・破壊的操作は`process_level:P4`とする。
 
@@ -140,15 +140,15 @@ SHA-256の適用範囲と開発キーは`INTEGRITY_POLICY.md`を正本とする�
 
 ```mermaid
 flowchart TD
-    A["Luna low / Flash-Lite: 読み取り専用で流し見"] --> B["実装強度・Process Level・対象パスを独立判定"]
+    A["skim: 読み取り専用で流し見"] --> B["実装強度・Process Level・対象パスを独立判定"]
     B --> BA["初回実装計画・範囲・修正案・強度理由を提示"]
     BA --> BB{"人間が明示承認したか"}
     BB -- "はい" --> C{"Implementation Intensity"}
     BB -- "いいえ" --> L
     C -- "MAX" --> D["完全工程"]
-    C -- "HIGH" --> E["Terra mid実装・Sol midレビュー"]
-    C -- "MID" --> F["Luna Ultra実装・Sol lowレビュー"]
-    C -- "LOW" --> G["Luna high実装・Terra midレビュー"]
+    C -- "HIGH" --> E["implementation.HIGH・review.HIGH"]
+    C -- "MID" --> F["implementation.MID・review.MID"]
+    C -- "LOW" --> G["implementation.LOW・review.LOW"]
     D --> H{"レビュー合格"}
     E --> H
     F --> H
@@ -189,12 +189,12 @@ flowchart TD
     J --> K["強制停止レポートを保存"]
     K --> Y{"USER_REQUESTED_STOPだけか"}
     Y -- "はい" --> Z["解析送信なし・ユーザー停止として終了"]
-    Y -- "いいえ" --> L{"Luna lowを利用できるか"}
-    L -- "はい" --> M["Luna lowへ送信・ログ分析"]
-    L -- "いいえ" --> N{"Flash-Liteを利用できるか"}
-    N -- "はい" --> V["Flash-Liteへ送信・ログ分析"]
+    Y -- "いいえ" --> L{"failure_analysisを利用できるか"}
+    L -- "はい" --> M["failure_analysisへ送信・ログ分析"]
+    L -- "いいえ" --> N{"代替Providerを利用できるか"}
+    N -- "はい" --> V["代替Providerへ送信・ログ分析"]
     N -- "いいえ" --> W["STOPをneeds_reviewへ変換"]
-    M --> O["Sol: 実ログと照合して原因を確定"]
+    M --> O["開発指揮: 実ログと照合して原因を確定"]
     V --> O
     O --> P["1段階昇格し、限定修正内容を確定"]
     P --> PA{"既存承認の範囲・方針・最大強度内か"}
@@ -208,18 +208,16 @@ flowchart TD
     R -- "いいえ" --> J
     R -- "はい" --> S["終了通知ファイルを生成"]
     S --> T["guard_summary.jsonを生成して監視終了"]
-    T --> U["Sol: 最終受入判定・解析Providerへ送信しない"]
+    T --> U["開発指揮: 最終受入判定・解析Providerへ送信しない"]
 ```
 
 ## 担当境界
 
-- Sol: 仕様作成、変更許可、`MAX/HIGH/MID`のレビュー、原因確定、修正指示、完了判定。
-- Terra medium: `HIGH`の実装、`LOW`のレビュー、Luna実装Provider不在時の代替を担当する。
-- Luna low: 流し見と失敗ログ分析だけを行う。コード変更、テスト実行、再起動、停止操作は禁止。
-- Luna high: `LOW`の限定実装を担当する。
-- Luna Ultra: `MID`の限定実装を担当する。
-- Antigravity Flash-Lite: Luna low不在時の流し見・失敗ログ分析だけを担当し、コードを変更しない。
-- Luna mid: `HIGH/MAX`の担当交代時だけ、選択済み一時スナップショットを引継ぎカプセルへ圧縮する。新しい原因、修正案、成功判定を追加しない。
+- 開発指揮（`lead`）: 仕様作成、変更許可、原因確定、修正指示、完了判定。
+- 実装担当（`implementation.<Intensity>`）: 指定範囲の限定実装を担当する。
+- レビュー担当（`review.<Intensity>`）: 指定差分を独立にレビューする。
+- 流し見担当（`skim`）と失敗解析担当（`failure_analysis`）: 読み取り専用。コード変更、テスト実行、再起動、停止操作は禁止。
+- 引継ぎ担当（`handoff`）: 担当交代時だけ、選択済み一時スナップショットを引継ぎカプセルへ圧縮する。新しい原因、修正案、成功判定を追加しない。
 - 共通監視ツール: 機械的な監視、記録、許可済みプロセスの停止だけを行う。原因確定はしない。
 
 実装担当は原則1エージェントとする。並列化を予定または推奨する場合は、対象、理由、担当境界、依存関係、競合防止策を先に提示し、人間の明示承認後だけ実行する。未承認時は完全直列とする。並列化は承認後も依存しない別ファイル群または独立成果物に限定する。同じファイルの二段階編集は既定にせず、レビューで問題が見つかった場合だけ限定修正する。
@@ -327,32 +325,30 @@ rework_count:
 12. 失敗後は監視ツールが後続テストを止め、構造化ログを解析担当へ渡す。原因確定後は`MAX_REWORK_COUNT`内で限定修正と再テストを行い、上限到達時だけ地雷を保存して`waiting_human`へ移す。
 13. 個別処理のハードタイムアウトは現時点で設けず、全体の30分停滞監視を維持する。実害が確認された処理だけ個別Specで追加する。
 
-## CLI送信とLuna low
+## 失敗解析Providerへの送信
 
-テスト成功時はLunaまたはAntigravityへ何も送信しない。テスト失敗・障害起因の強制停止時だけ解析用プロンプトを送信する。軽度問題だけ、または各プログラムがバインドした`USER_REQUESTED_STOP`だけでは送信しない。
+テスト成功時は解析Providerへ何も送信しない。テスト失敗・障害起因の強制停止時だけ解析用プロンプトを送信する。軽度問題だけ、または各プログラムがバインドした`USER_REQUESTED_STOP`だけでは送信しない。
 
-```text
-codex exec -s read-only resume -m gpt-5.6-luna -c model_reasoning_effort="low" -o luna_response.md <session_id> -
-```
+CLI構文、モデル名、推論強度はRuntime Adapterで解決する。Coreは論理ロール`failure_analysis`と読み取り専用契約だけを渡す。
 
-- テスト失敗後にLuna Task Providerの利用可否を確認する。成功時はProviderを起動しない。
-- Luna lowを利用できない場合はAntigravity Flash-Liteへ同じ読み取り専用解析指示を送る。
+- テスト失敗後に解析Providerの利用可否を確認する。成功時はProviderを起動しない。
+- 既定Providerを利用できない場合はRuntime Adapterで設定された代替Providerへ同じ読み取り専用解析指示を送る。
 - 両Providerを利用できない場合は送信を反復せず`needs_review`とする。
 - 新規解析タスクを既定とする。
 - 既存タスクはUI上で`/clear`完了を確認できた場合だけ使用する。通常メッセージとして送った`/clear`は消去証拠にしない。
 - 同一テストタスク中は履歴を維持する。
 - 入力は`force_stop_report.json`、`luna_report_prompt.md`、対象ログ末尾に限定する。
-- Lunaはエラーコード、停止地点、対象PID、直接原因候補、根拠、修正候補を返す。
-- Lunaの分析だけで修正を開始しない。Solが実ログと照合してからTerraへ指示する。
-- CLI送信失敗時は`codex_cli_notify.json`を残し、Solが保存済みファイルを直接読む。
+- 解析担当はエラーコード、停止地点、対象PID、直接原因候補、根拠、修正候補を返す。
+- 解析結果だけで修正を開始しない。開発指揮が実ログと照合してから実装担当へ指示する。
+- CLI送信失敗時は通知結果を保存し、開発指揮が保存済みファイルを直接読む。
 
 ## 完了条件
 
 - 個別仕様の全成功条件と必須テストを満たす。
 - 最新実行の件数、ID集合、更新時刻、SHA-256、成果物を確認する。
 - 強制停止が存在しない。
-- 軽度問題が許容範囲かSolが確認済みである。
-- Solのコードレビューと最終判定が完了している。
+- 軽度問題が許容範囲か開発指揮が確認済みである。
+- レビュー担当のコードレビューと開発指揮の最終判定が完了している。
 
 `guard_summary.json`の`completed`だけでは制作物の完了を意味しない。
 

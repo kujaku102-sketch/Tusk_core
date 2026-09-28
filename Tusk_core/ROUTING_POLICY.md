@@ -20,7 +20,7 @@ Implementation Intensity classifies only technical implementation difficulty. It
 |---|---|---|---:|
 | `LOW` | Text, constants, isolated Markdown, or a mechanically bounded edit | lightweight implementation provider | 8 KiB |
 | `MID` | Bounded logic in one feature with established interfaces | standard implementation provider | 8 KiB |
-| `HIGH` | Complex logic, multiple internal dependencies, concurrency, or difficult diagnosis | `Terra/mid` implementation with high-reasoning review | 16 KiB |
+| `HIGH` | Complex logic, multiple internal dependencies, concurrency, or difficult diagnosis | capable implementation provider with high-reasoning review | 16 KiB |
 | `MAX` | Exceptional implementation requiring the most capable route and focused review | highest-capability implementation and review route | 24 KiB |
 
 Implementation Intensity owns only technical implementation difficulty, implementation-provider routing, and implementation context/cache volume. Process Level independently owns impact, protected surfaces, safety procedure, approval gates, rollback requirements, and minimum test scope.
@@ -37,7 +37,7 @@ intensity_reason: <technical evidence or null>
 provider_route: <selected provider or null>
 cache_input_ceiling_kib: 8 | 16 | 24 | null
 automatic_max_count: 0 | 1 | null
-max_trigger: null | recurrent_error_or_stop | terra_mid_impractical
+max_trigger: null | recurrent_error_or_stop | high_route_impractical
 max_evidence: null | <artifact or observation reference>
 process_level: <value selected under PROCESS_POLICY.md or null>
 process_level_reason: <impact and safety evidence or null>
@@ -83,7 +83,7 @@ Snapshot policyは入力候補の選定であり、流し見担当自身がキ�
 Automatic escalation to `MAX` is permitted only when current evidence establishes at least one trigger:
 
 1. `recurrent_error_or_stop`: errors or forced stops recur enough to show the current route is not converging; or
-2. `terra_mid_impractical`: implementation is technically impractical for `Terra/mid` to perform reliably.
+2. `high_route_impractical`: implementation is technically impractical for the configured `HIGH` route to perform reliably.
 
 The record must contain the trigger, evidence, previous intensity, and work ID before implementation continues. A preference for a stronger model, vague low confidence, schedule pressure, or Process Level alone is invalid.
 

@@ -26,6 +26,8 @@ workspace直下の`developer.key.json`を初回だけtrust登録する。登録�
 
 キーJSON、workspace、scopeのいずれかが変わった場合は権限を失効し、再trustを要求する。環境変数だけで権限を有効化しない。
 
+検証済み開発権限は`PROCESS_POLICY.md`のRecovery authorization Bでも使用できる。再作業回数制限の解除条件、説明、同意、適用範囲、失効は同Policyを正本とし、キー確認だけでは解除しない。
+
 ## 開発時
 
 - manifest不一致は変更一覧を表示して続行できる。

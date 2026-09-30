@@ -26,4 +26,11 @@ python role_adapter.py resolve --adapter codex --config C:/settings/codex/config
 
 config編集、モデル割当変更、プロファイル追加・差し替えはRuntime Adapter設定の変更として自由に行える。Core規則変更、Core変更承認、Core manifest再生成の対象にはしない。適用時はschemaとロール権限を検証し、失敗した場合は別プロファイルへ黙って切り替えない。設定変更でMAX承認やProcess Level、変更可能範囲を解除できない。
 
+Codexの現行profileは`Tusk_agents6.1`。実装はLOW=`6Luna/high`、MID=`6Luna/max`、HIGH=`6.1Sol/high`、MAX=`6Astra/high`。流し見は`6Luna/medium`、本レビューは全強度で`6.1Sol/medium`、設計は`6.1Sol/high`、MAX設計は`6Astra/medium`。指揮は会話のモデルと推論強度を継承する。失敗解析と引継ぎは従来割当を維持する。
+
+```powershell
+python role_adapter.py resolve --adapter codex --role design --intensity MAX
+python role_adapter.py resolve --adapter codex --role lead
+```
+
 Core監視ツールから失敗解析を通知する場合は、`failure_analysis`を解決した`model`を`--codex-model`で渡す。未指定時は`TUSK_CODEX_ANALYSIS_MODEL`を参照し、どちらもない場合は通知を開始しない。

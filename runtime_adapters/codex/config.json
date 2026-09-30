@@ -1,8 +1,9 @@
 {
   "schema_version": 1,
   "adapter_id": "codex",
-  "active_profile": "default",
+  "active_profile": "Tusk_agents6.1",
   "profiles": {
-    "default": "adapter.json"
+    "default": "adapter.json",
+    "Tusk_agents6.1": "profiles/Tusk_agents6.1.json"
   }
 }

@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parent
 INTENSITIES = {"LOW", "MID", "HIGH", "MAX"}
 SIMPLE_ROLES = {"lead", "skim", "failure_analysis", "handoff"}
 MATRIX_ROLES = {"implementation", "review"}
+OPTIONAL_MATRIX_ROLES = {"design"}
 
 
 def load_adapter(name, config_path=None, profile=None):
@@ -46,14 +47,19 @@ def validate_binding(binding):
 
 
 def validate_adapter(data):
-    if data.get("schema_version") != 1 or not data.get("adapter_id"):
+    if data.get("schema_version") not in (1, 2) or not data.get("adapter_id"):
         raise ValueError("invalid adapter header")
     bindings = data.get("bindings", {})
-    if set(bindings) != SIMPLE_ROLES | MATRIX_ROLES:
+    expected = SIMPLE_ROLES | MATRIX_ROLES
+    if data["schema_version"] == 2:
+        expected |= OPTIONAL_MATRIX_ROLES
+    if set(bindings) != expected:
         raise ValueError("invalid role set")
     for role in SIMPLE_ROLES:
+        if role == "lead" and data["schema_version"] == 2 and bindings[role] == {"inherit": "conversation", "access": "orchestrate"}:
+            continue
         validate_binding(bindings[role])
-    for role in MATRIX_ROLES:
+    for role in expected - SIMPLE_ROLES:
         matrix = bindings[role]
         if set(matrix) != INTENSITIES:
             raise ValueError(f"invalid intensity matrix: {role}")
@@ -66,16 +72,20 @@ def validate_adapter(data):
         raise ValueError("handoff must be transform_only")
     if bindings["lead"]["access"] != "orchestrate":
         raise ValueError("lead must be orchestrate")
-    for role, access in (("implementation", "write_limited"), ("review", "review_only")):
+    for role, access in (("implementation", "write_limited"), ("review", "review_only"), ("design", "read_only")):
+        if role not in bindings:
+            continue
         if any(binding["access"] != access for binding in bindings[role].values()):
             raise ValueError(f"invalid {role} access")
 
 
 def resolve(adapter, role, intensity=None, config_path=None, profile=None):
     data = load_adapter(adapter, config_path, profile)
-    if role in MATRIX_ROLES:
+    if role in MATRIX_ROLES | OPTIONAL_MATRIX_ROLES:
         if intensity not in INTENSITIES:
             raise ValueError("intensity is required")
+        if role not in data["bindings"]:
+            raise ValueError("role is not available in this profile")
         binding = dict(data["bindings"][role][intensity])
     elif role in SIMPLE_ROLES:
         if intensity is not None:
@@ -83,7 +93,11 @@ def resolve(adapter, role, intensity=None, config_path=None, profile=None):
         binding = dict(data["bindings"][role])
     else:
         raise ValueError("unknown logical role")
-    binding["model"] = os.environ.get(binding["model_env"], binding["model_alias"])
+    if binding.get("inherit") == "conversation":
+        binding["model"] = None
+        binding["reasoning_effort"] = None
+    else:
+        binding["model"] = os.environ.get(binding["model_env"], binding["model_alias"])
     return {"adapter": data["adapter_id"], "profile": data["selected_profile"], "logical_role": role, "intensity": intensity, **binding}
 
 
@@ -94,7 +108,7 @@ def main(argv=None):
     validate.add_argument("--adapter", choices=["codex", "claude"])
     resolve_parser = commands.add_parser("resolve")
     resolve_parser.add_argument("--adapter", required=True, choices=["codex", "claude"])
-    resolve_parser.add_argument("--role", required=True, choices=sorted(SIMPLE_ROLES | MATRIX_ROLES))
+    resolve_parser.add_argument("--role", required=True, choices=sorted(SIMPLE_ROLES | MATRIX_ROLES | OPTIONAL_MATRIX_ROLES))
     resolve_parser.add_argument("--intensity", choices=sorted(INTENSITIES))
     for command in (validate, resolve_parser):
         command.add_argument("--config", type=Path)

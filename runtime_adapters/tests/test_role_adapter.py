@@ -20,8 +20,8 @@ class RoleAdapterTests(unittest.TestCase):
 
     def test_codex_current_high_route(self):
         result = role_adapter.resolve("codex", "implementation", "HIGH")
-        self.assertEqual("gpt-6-sol", result["model"])
-        self.assertEqual("medium", result["reasoning_effort"])
+        self.assertEqual("gpt-6.1-sol", result["model"])
+        self.assertEqual("high", result["reasoning_effort"])
         self.assertEqual("write_limited", result["access"])
 
     def test_claude_role_families(self):
@@ -59,6 +59,29 @@ class RoleAdapterTests(unittest.TestCase):
         data["bindings"]["review"]["MAX"]["access"] = "write_limited"
         with self.assertRaises(ValueError):
             role_adapter.validate_adapter(data)
+
+    def test_agents61_routes_and_conversation_lead(self):
+        expected = {"LOW": ("gpt-6-luna", "high"), "MID": ("gpt-6-luna", "max"), "HIGH": ("gpt-6.1-sol", "high"), "MAX": ("gpt-6-astra", "high")}
+        for intensity, pair in expected.items():
+            result = role_adapter.resolve("codex", "implementation", intensity)
+            self.assertEqual(pair, (result["model"], result["reasoning_effort"]))
+            review = role_adapter.resolve("codex", "review", intensity)
+            self.assertEqual(("gpt-6.1-sol", "medium"), (review["model"], review["reasoning_effort"]))
+        self.assertEqual("medium", role_adapter.resolve("codex", "skim")["reasoning_effort"])
+        for intensity, pair in (("HIGH", ("gpt-6.1-sol", "high")), ("MAX", ("gpt-6-astra", "medium"))):
+            design = role_adapter.resolve("codex", "design", intensity)
+            self.assertEqual(pair, (design["model"], design["reasoning_effort"]))
+        with mock.patch.dict(os.environ, {"TUSK_CODEX_LEAD_MODEL": "must-not-override-conversation"}):
+            lead = role_adapter.resolve("codex", "lead")
+        self.assertEqual("conversation", lead["inherit"])
+        self.assertIsNone(lead["model"])
+        self.assertIsNone(lead["reasoning_effort"])
+
+    def test_original_profile_remains_selectable(self):
+        result = role_adapter.resolve("codex", "implementation", "HIGH", profile="default")
+        self.assertEqual("gpt-6-sol", result["model"])
+        with self.assertRaises(ValueError):
+            role_adapter.resolve("codex", "design", "HIGH", profile="default")
 
 
 if __name__ == "__main__":

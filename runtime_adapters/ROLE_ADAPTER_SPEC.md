@@ -16,6 +16,9 @@ configとprofileはCore外の自由編集設定であり、追加・差し替え
 - `handoff`
 - `implementation` + `LOW|MID|HIGH|MAX`
 - `review` + `LOW|MID|HIGH|MAX`
+- `design` + `LOW|MID|HIGH|MAX`（binding schema version 2）
+
+schema version 2の`lead`は`{"inherit":"conversation","access":"orchestrate"}`を選べる。この場合の解決結果は`model: null`と`reasoning_effort: null`で、呼出し側は会話の設定を維持し、モデル指定や推論強度の上書きを渡さない。`design`は読み取り専用の設計成果物を返し、記録担当が文書へ保存する。schema version 1の既存profileも引き続き利用できる。
 
 `skim`と`failure_analysis`は常に`read_only`。`handoff`は`transform_only`。実装だけ`write_limited`を許可する。Adapter解決失敗は推測せず非ゼロ終了とする。
 

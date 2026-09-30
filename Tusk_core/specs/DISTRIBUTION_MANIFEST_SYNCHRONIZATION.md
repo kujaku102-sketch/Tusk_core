@@ -28,6 +28,7 @@ manifestのmanaged pathとSHAが配布対象に一致し、Integrity Authority�
 
 ## History
 
+- 2026-10-01: WindowsのCRLF作業コピーとGitのLF保存内容による48件のSHA不一致を修正した。checkoutをLFへ固定し、manifest再生成と新規checkout検証を追加した。
 - 2026-08-17: 現行Core構成からmanifestを再生成した。
 - 2026-08-17: release integrityとCore全体94件が成功した。
 - 2026-08-21: legacy identityを保持してnumberless Specへ移行した。

@@ -78,6 +78,8 @@ accepted/rejected envelope、record replay・conflict、latest-validの更新、
 
 ## Provider routing and snapshot policy
 
+モデルと推論強度はRuntime Adapterの`config.json`が選択したprofileから解決し、解決済み論理ロール割当をorchestration setupへ渡す。configとprofileの編集はCore規則変更として扱わない。設定書式と解決手順はRuntime Adapterを正本とし、Coreへ複製しない。設定変更はMAX承認、actor権限、安全工程を変更しない。
+
 Intensityの既定Providerは上表から選ぶ。Process Level、テスト数、作業優先度をProvider選択の代用にしない。Providerを置換してもIntensity、Process Level、安全下限、承認条件は変わらない。
 
 既定Providerが利用できない場合はRuntime Adapterで設定された代替Providerへ一度だけ切り替えられる。Provider利用可否の確認は作業単位で一度だけとし、接続失敗を反復しない。Provider変更自体は`rework_count`へ算入しない。レビューProviderを変更する場合も同等以上の読み取り専用レビュー能力を必要とし、実装担当による自己レビューへ置換しない。

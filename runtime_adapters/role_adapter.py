@@ -11,12 +11,29 @@ SIMPLE_ROLES = {"lead", "skim", "failure_analysis", "handoff"}
 MATRIX_ROLES = {"implementation", "review"}
 
 
-def load_adapter(name):
+def load_adapter(name, config_path=None, profile=None):
     if not name or any(char not in "abcdefghijklmnopqrstuvwxyz0123456789_-" for char in name):
         raise ValueError("invalid adapter name")
-    path = ROOT / name / "adapter.json"
+    config_path = Path(config_path) if config_path else ROOT / name / "config.json"
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    if config.get("schema_version") != 1 or config.get("adapter_id") != name:
+        raise ValueError("invalid profile config header")
+    selected = profile if profile is not None else config.get("active_profile")
+    profiles = config.get("profiles")
+    if not isinstance(selected, str) or not isinstance(profiles, dict) or selected not in profiles:
+        raise ValueError("unknown profile")
+    value = profiles[selected]
+    if not isinstance(value, str) or not value:
+        raise ValueError("invalid profile path")
+    path = Path(value)
+    if not path.is_absolute():
+        path = config_path.parent / path
     data = json.loads(path.read_text(encoding="utf-8"))
     validate_adapter(data)
+    if data["adapter_id"] != name:
+        raise ValueError("profile adapter mismatch")
+    data = dict(data)
+    data["selected_profile"] = selected
     return data
 
 
@@ -47,10 +64,15 @@ def validate_adapter(data):
             raise ValueError(f"{role} must be read_only")
     if bindings["handoff"]["access"] != "transform_only":
         raise ValueError("handoff must be transform_only")
+    if bindings["lead"]["access"] != "orchestrate":
+        raise ValueError("lead must be orchestrate")
+    for role, access in (("implementation", "write_limited"), ("review", "review_only")):
+        if any(binding["access"] != access for binding in bindings[role].values()):
+            raise ValueError(f"invalid {role} access")
 
 
-def resolve(adapter, role, intensity=None):
-    data = load_adapter(adapter)
+def resolve(adapter, role, intensity=None, config_path=None, profile=None):
+    data = load_adapter(adapter, config_path, profile)
     if role in MATRIX_ROLES:
         if intensity not in INTENSITIES:
             raise ValueError("intensity is required")
@@ -62,7 +84,7 @@ def resolve(adapter, role, intensity=None):
     else:
         raise ValueError("unknown logical role")
     binding["model"] = os.environ.get(binding["model_env"], binding["model_alias"])
-    return {"adapter": data["adapter_id"], "logical_role": role, "intensity": intensity, **binding}
+    return {"adapter": data["adapter_id"], "profile": data["selected_profile"], "logical_role": role, "intensity": intensity, **binding}
 
 
 def main(argv=None):
@@ -74,15 +96,20 @@ def main(argv=None):
     resolve_parser.add_argument("--adapter", required=True, choices=["codex", "claude"])
     resolve_parser.add_argument("--role", required=True, choices=sorted(SIMPLE_ROLES | MATRIX_ROLES))
     resolve_parser.add_argument("--intensity", choices=sorted(INTENSITIES))
+    for command in (validate, resolve_parser):
+        command.add_argument("--config", type=Path)
+        command.add_argument("--profile")
     args = parser.parse_args(argv)
     try:
         if args.command == "validate":
+            if args.config and not args.adapter:
+                raise ValueError("--config requires --adapter")
             names = [args.adapter] if args.adapter else ["codex", "claude"]
             for name in names:
-                load_adapter(name)
+                load_adapter(name, args.config, args.profile)
             print(json.dumps({"status": "ok", "adapters": names}))
             return 0
-        print(json.dumps(resolve(args.adapter, args.role, args.intensity), ensure_ascii=False, indent=2))
+        print(json.dumps(resolve(args.adapter, args.role, args.intensity, args.config, args.profile), ensure_ascii=False, indent=2))
         return 0
     except Exception as exc:
         print(json.dumps({"status": "error", "detail": str(exc)}, ensure_ascii=False), file=sys.stderr)

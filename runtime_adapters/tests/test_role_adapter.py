@@ -1,5 +1,7 @@
 import importlib.util
 import os
+import json
+import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -35,6 +37,28 @@ class RoleAdapterTests(unittest.TestCase):
     def test_read_only_roles_cannot_receive_intensity(self):
         with self.assertRaises(ValueError):
             role_adapter.resolve("codex", "skim", "LOW")
+
+    def test_active_profile_and_explicit_override(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            default = role_adapter.load_adapter("codex")
+            default.pop("selected_profile")
+            custom = json.loads(json.dumps(default))
+            custom["bindings"]["skim"]["model_alias"] = "custom-model"
+            for name, data in (("default", default), ("custom", custom)):
+                (root / f"{name}.json").write_text(json.dumps(data), encoding="utf-8")
+            config = root / "config.json"
+            config.write_text(json.dumps({"schema_version": 1, "adapter_id": "codex", "active_profile": "custom", "profiles": {"default": "default.json", "custom": "custom.json"}}), encoding="utf-8")
+            self.assertEqual("custom-model", role_adapter.resolve("codex", "skim", config_path=config)["model"])
+            self.assertEqual("default", role_adapter.resolve("codex", "skim", config_path=config, profile="default")["profile"])
+            with self.assertRaises(ValueError):
+                role_adapter.resolve("codex", "skim", config_path=config, profile="missing")
+
+    def test_profile_cannot_expand_role_access(self):
+        data = role_adapter.load_adapter("codex")
+        data["bindings"]["review"]["MAX"]["access"] = "write_limited"
+        with self.assertRaises(ValueError):
+            role_adapter.validate_adapter(data)
 
 
 if __name__ == "__main__":

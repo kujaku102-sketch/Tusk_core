@@ -1,0 +1,786 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tusk:core:record:5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "family_id",
+    "sequence",
+    "previous_hash",
+    "event_id",
+    "request_id",
+    "work_id",
+    "generation",
+    "type",
+    "actor",
+    "timestamp",
+    "causal_refs",
+    "contract_hash",
+    "payload",
+    "payload_hash",
+    "event_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 5
+    },
+    "family_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "previous_hash": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/hash"
+        }
+      ]
+    },
+    "event_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "work_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "type": {
+      "enum": [
+        "PLAN",
+        "OPEN",
+        "RESULT",
+        "VERIFY",
+        "REVIEW",
+        "APPROVAL",
+        "REVOKE",
+        "CONSUME",
+        "CLOSE",
+        "STOP",
+        "CHECKPOINT",
+        "CORRECTION",
+        "RECOVERY",
+        "SUCCESSOR",
+        "RESTORE",
+        "RESERVE",
+        "RECEIPT",
+        "CUSTOM"
+      ]
+    },
+    "actor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "causal_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/hash"
+      }
+    },
+    "contract_hash": {
+      "$ref": "#/$defs/hash"
+    },
+    "payload": {
+      "type": "object"
+    },
+    "payload_hash": {
+      "$ref": "#/$defs/hash"
+    },
+    "event_hash": {
+      "$ref": "#/$defs/hash"
+    }
+  },
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "root_identity",
+        "sha256",
+        "files"
+      ],
+      "properties": {
+        "root_identity": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "sha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "identity",
+              "size",
+              "sha256"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "identity": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "size": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sha256": {
+                "$ref": "#/$defs/hash"
+              }
+            }
+          }
+        }
+      }
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "request",
+        "source",
+        "scope",
+        "requirements",
+        "implementer",
+        "owner",
+        "intensity",
+        "risk",
+        "stage",
+        "checks",
+        "independent_review",
+        "protected"
+      ],
+      "properties": {
+        "request": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_ref",
+            "text"
+          ],
+          "properties": {
+            "source_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 16384
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 16384
+            }
+          }
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16384
+        },
+        "scope": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          }
+        },
+        "requirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "path",
+                  "contains"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 16384
+                  },
+                  "contains": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 16384
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "path",
+                  "sha256"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 16384
+                  },
+                  "sha256": {
+                    "$ref": "#/$defs/hash"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "implementer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16384
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16384
+        },
+        "intensity": {
+          "enum": [
+            "LOW",
+            "MID",
+            "HIGH",
+            "MAX"
+          ]
+        },
+        "risk": {
+          "enum": [
+            "P0",
+            "P1",
+            "P2",
+            "P3",
+            "P4"
+          ]
+        },
+        "stage": {
+          "enum": [
+            "local",
+            "release_candidate"
+          ]
+        },
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          }
+        },
+        "independent_review": {
+          "type": "boolean"
+        },
+        "protected": {
+          "type": "boolean"
+        }
+      }
+    },
+    "payloads": {
+      "PLAN": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "plan",
+          "baseline"
+        ],
+        "properties": {
+          "plan": {
+            "$ref": "#/$defs/plan"
+          },
+          "baseline": {
+            "$ref": "#/$defs/snapshot"
+          }
+        }
+      },
+      "OPEN": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [],
+        "properties": {}
+      },
+      "RESULT": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "snapshot"
+        ],
+        "properties": {
+          "snapshot": {
+            "$ref": "#/$defs/snapshot"
+          }
+        }
+      },
+      "VERIFY": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "check",
+          "passed",
+          "purpose",
+          "result_ref",
+          "snapshot_sha256",
+          "report_sha256",
+          "reason"
+        ],
+        "properties": {
+          "check": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "purpose": {
+            "enum": [
+              "development",
+              "acceptance"
+            ]
+          },
+          "result_ref": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/$defs/hash"
+              }
+            ]
+          },
+          "snapshot_sha256": {
+            "$ref": "#/$defs/hash"
+          },
+          "report_sha256": {
+            "$ref": "#/$defs/hash"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 16384
+          }
+        }
+      },
+      "REVIEW": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "phase",
+          "accepted",
+          "target_ref",
+          "source_ref",
+          "text"
+        ],
+        "properties": {
+          "phase": {
+            "enum": [
+              "design",
+              "final"
+            ]
+          },
+          "accepted": {
+            "type": "boolean"
+          },
+          "target_ref": {
+            "$ref": "#/$defs/hash"
+          },
+          "source_ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          }
+        }
+      },
+      "APPROVAL": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action",
+          "target",
+          "plan_ref",
+          "source_ref",
+          "text",
+          "candidate_sha256"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "work",
+              "execute",
+              "restore",
+              "recovery",
+              "publish",
+              "activate"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          },
+          "plan_ref": {
+            "$ref": "#/$defs/hash"
+          },
+          "source_ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          },
+          "candidate_sha256": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/$defs/hash"
+              }
+            ]
+          }
+        }
+      },
+      "REVOKE": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "approval_ref"
+        ],
+        "properties": {
+          "approval_ref": {
+            "$ref": "#/$defs/hash"
+          }
+        }
+      },
+      "CONSUME": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "approval_ref",
+          "action",
+          "target",
+          "candidate_sha256"
+        ],
+        "properties": {
+          "approval_ref": {
+            "$ref": "#/$defs/hash"
+          },
+          "action": {
+            "enum": [
+              "publish",
+              "activate"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          },
+          "candidate_sha256": {
+            "$ref": "#/$defs/hash"
+          }
+        }
+      },
+      "CLOSE": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "disposition",
+          "snapshot"
+        ],
+        "properties": {
+          "disposition": {
+            "enum": [
+              "completed",
+              "abandoned"
+            ]
+          },
+          "snapshot": {
+            "$ref": "#/$defs/snapshot"
+          }
+        }
+      },
+      "STOP": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reason",
+          "snapshot"
+        ],
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          },
+          "snapshot": {
+            "$ref": "#/$defs/snapshot"
+          }
+        }
+      },
+      "CHECKPOINT": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "snapshot",
+          "grade"
+        ],
+        "properties": {
+          "snapshot": {
+            "$ref": "#/$defs/snapshot"
+          },
+          "grade": {
+            "enum": [
+              "baseline",
+              "verified"
+            ]
+          }
+        }
+      },
+      "CORRECTION": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "plan",
+          "baseline"
+        ],
+        "properties": {
+          "plan": {
+            "$ref": "#/$defs/plan"
+          },
+          "baseline": {
+            "$ref": "#/$defs/snapshot"
+          }
+        }
+      },
+      "RECOVERY": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "plan",
+          "baseline",
+          "approval_ref",
+          "failures_sha256",
+          "corrections_total"
+        ],
+        "properties": {
+          "plan": {
+            "$ref": "#/$defs/plan"
+          },
+          "baseline": {
+            "$ref": "#/$defs/snapshot"
+          },
+          "approval_ref": {
+            "$ref": "#/$defs/hash"
+          },
+          "failures_sha256": {
+            "$ref": "#/$defs/hash"
+          },
+          "corrections_total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "SUCCESSOR": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "plan",
+          "baseline",
+          "failures_sha256",
+          "corrections_total"
+        ],
+        "properties": {
+          "plan": {
+            "$ref": "#/$defs/plan"
+          },
+          "baseline": {
+            "$ref": "#/$defs/snapshot"
+          },
+          "failures_sha256": {
+            "$ref": "#/$defs/hash"
+          },
+          "corrections_total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "RESTORE": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "checkpoint_ref",
+          "approval_ref",
+          "before",
+          "after"
+        ],
+        "properties": {
+          "checkpoint_ref": {
+            "$ref": "#/$defs/hash"
+          },
+          "approval_ref": {
+            "$ref": "#/$defs/hash"
+          },
+          "before": {
+            "$ref": "#/$defs/snapshot"
+          },
+          "after": {
+            "$ref": "#/$defs/snapshot"
+          }
+        }
+      },
+      "RESERVE": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action",
+          "request",
+          "request_sha256",
+          "approval_ref",
+          "timeout_seconds",
+          "snapshot"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "execute",
+              "restore"
+            ]
+          },
+          "request": {
+            "type": "object"
+          },
+          "request_sha256": {
+            "$ref": "#/$defs/hash"
+          },
+          "approval_ref": {
+            "$ref": "#/$defs/hash"
+          },
+          "timeout_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 30
+          },
+          "snapshot": {
+            "$ref": "#/$defs/snapshot"
+          }
+        }
+      },
+      "RECEIPT": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reservation_ref",
+          "request_sha256",
+          "completed",
+          "duration_seconds",
+          "report_sha256",
+          "reason",
+          "snapshot"
+        ],
+        "properties": {
+          "reservation_ref": {
+            "$ref": "#/$defs/hash"
+          },
+          "request_sha256": {
+            "$ref": "#/$defs/hash"
+          },
+          "completed": {
+            "type": "boolean"
+          },
+          "duration_seconds": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 30
+          },
+          "report_sha256": {
+            "$ref": "#/$defs/hash"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 16384
+          },
+          "snapshot": {
+            "$ref": "#/$defs/snapshot"
+          }
+        }
+      },
+      "CUSTOM": {
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          }
+        }
+      }
+    }
+  }
+}

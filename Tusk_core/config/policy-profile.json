@@ -1,0 +1,32 @@
+{
+  "schema_version": 5,
+  "component": "core_gen2",
+  "supports": {
+    "local_code_workflow": true,
+    "external_evidence": true,
+    "pre_result_recovery": true,
+    "post_result_recovery": true,
+    "rollback": "explicit_adapter_existing_files",
+    "signed_identity": false,
+    "automatic_publication": false,
+    "automatic_activation": false,
+    "untrusted_execution": false
+  },
+  "intensities": ["LOW", "MID", "HIGH", "MAX"],
+  "risks": ["P0", "P1", "P2", "P3", "P4"],
+  "limits": {
+    "max_scope_files": 64,
+    "max_file_bytes": 1048576,
+    "max_object_bytes": 8388608,
+    "max_events": 1000,
+    "max_corrections": 3,
+    "max_generations": 3,
+    "max_launches": 40,
+    "max_development_failures": 2,
+    "max_execution_seconds": 30,
+    "max_family_execution_seconds": 1800
+  },
+  "denied_segments": [".git", ".env", "secrets", "credentials", "truststore", "__pycache__"],
+  "denied_suffixes": [".pem", ".pfx", ".p12", ".key"],
+  "denied_names": ["token.json", "credentials.json", "developer.key.json", "id_rsa", "id_ed25519"]
+}

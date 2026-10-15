@@ -14,8 +14,8 @@
     },
     {
       "path": "AGENTS.md",
-      "bytes": 333,
-      "sha256": "8b9053b225da0f408352c44d25aa8fc5d4fd34bd7354e0c41f3dcca07b77a294"
+      "bytes": 371,
+      "sha256": "ead6e3d3f1234a436e621148a2c6d4a307bc8986042e0145ce3dc4886f8e7767"
     },
     {
       "path": "LICENSE",
@@ -34,16 +34,21 @@
     },
     {
       "path": "Tusk_core/AUTHORITY-MAP.json",
-      "bytes": 227,
-      "sha256": "d1ad8d76f18a3add7daee851853ef28ac20020ae5fbbdc7056d932121315d291"
+      "bytes": 276,
+      "sha256": "ae59f28e94fc1b6a039c76b26183bd4f9062334920707a2cba25daef2ee997c5"
     },
     {
       "path": "Tusk_core/DISTRIBUTION-MANIFEST.json"
     },
     {
       "path": "Tusk_core/POLICY.md",
-      "bytes": 6589,
-      "sha256": "a037e714887cad94cf5dda1eb962b04d410cce8803833a4753ef6ac42c9eb05e"
+      "bytes": 6944,
+      "sha256": "5792f6577ab71433d965a1dd8bab73649814fbafa5b5d4251d404678e922e197"
+    },
+    {
+      "path": "Tusk_core/EXTENSION_POLICY.md",
+      "bytes": 11102,
+      "sha256": "817037ed5e343b28dbf9de0895ae0abdbf9fae78b940f8ab502a5707d4ecae13"
     },
     {
       "path": "Tusk_core/config/policy-profile.json",

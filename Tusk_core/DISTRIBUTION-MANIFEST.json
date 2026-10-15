@@ -52,8 +52,8 @@
     },
     {
       "path": "Tusk_core/config/policy-profile.json",
-      "bytes": 1050,
-      "sha256": "d7148ecd80df5391e7a355deeea2e8f1c7483fa2e821570eaa576556d0db9651"
+      "bytes": 975,
+      "sha256": "11bcefdfa55cc25570bc8d6d161723c135829180a38baa2251ea63a8d3c184cd"
     },
     {
       "path": "Tusk_core/requirements.txt",
@@ -67,8 +67,8 @@
     },
     {
       "path": "Tusk_core/runtime/authority.py",
-      "bytes": 15687,
-      "sha256": "9d4dcd1dcff1d834208e1458bd8c9efa11dd025fc21f8c162efb5beda6a3ac9f"
+      "bytes": 15448,
+      "sha256": "89d2832b12e79d39fdb2ccf6886124f343b30d8b84a994b67409d34e6d532e35"
     },
     {
       "path": "Tusk_core/runtime/cli.py",
@@ -92,8 +92,8 @@
     },
     {
       "path": "Tusk_core/runtime/recorder.py",
-      "bytes": 19098,
-      "sha256": "1daf11c3bcfe8ec3e37f67599389c2e5e2dfeadaff9b470cb3ad7b379a504f1e"
+      "bytes": 19086,
+      "sha256": "f35a128d6473de3f5f2ed4c45f6dd2df04c04884a7915dc2c708f29f6d2a708a"
     },
     {
       "path": "Tusk_core/runtime/storage.py",
@@ -107,8 +107,8 @@
     },
     {
       "path": "Tusk_core/schemas/contract.schema.json",
-      "bytes": 17276,
-      "sha256": "ad73927f382763564e01095a3f1033280b9350730ab9ed1ba0b117be8619f1af"
+      "bytes": 17222,
+      "sha256": "af4e9a43235437183aef9b985dd7b889a1956526648b95c3e4582319c0f46618"
     }
   ]
 }

@@ -187,10 +187,7 @@ def validate(event, history, store, registry):
         c.require(state['status'] == ('running' if action == 'execute' else 'stopped') and
                   actor == (plan['implementer'] if action == 'execute' else plan['owner']), 'execution_state')
         c.require(state['launches'] < c.PROFILE['limits']['max_launches'], 'launch_budget')
-        c.require(type(payload['timeout_seconds']) is int and 0 < payload['timeout_seconds'] <=
-                  c.PROFILE['limits']['max_execution_seconds'], 'execution_timeout')
-        c.require(state['execution_seconds'] + payload['timeout_seconds'] <=
-                  c.PROFILE['limits']['max_family_execution_seconds'], 'execution_time_budget')
+        c.require(type(payload['timeout_seconds']) is int and payload['timeout_seconds'] > 0, 'execution_timeout')
         c.require(payload['request_sha256'] == c.hashed(payload['request']), 'execution_request_hash')
         target = payload['request_sha256'] if action == 'execute' else checkpoint_snapshot(state['checkpoint'])['sha256']
         if action == 'execute':

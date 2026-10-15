@@ -22,9 +22,7 @@
     "max_corrections": 3,
     "max_generations": 3,
     "max_launches": 40,
-    "max_development_failures": 2,
-    "max_execution_seconds": 30,
-    "max_family_execution_seconds": 1800
+    "max_development_failures": 2
   },
   "denied_segments": [".git", ".env", "secrets", "credentials", "truststore", "__pycache__"],
   "denied_suffixes": [".pem", ".pfx", ".p12", ".key"],

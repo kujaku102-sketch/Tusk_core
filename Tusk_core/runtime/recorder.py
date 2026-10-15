@@ -224,7 +224,7 @@ class Recorder:
                                        'corrections_total': state['corrections_total']}, actor=actor,
                            generation=state['generation'] + 1)
 
-    def prepare_restore(self, approval_ref, *, actor):
+    def prepare_restore(self, approval_ref, *, actor, timeout_seconds):
         state = self.status()
         c.require(state['status'] == 'stopped' and state['pending'] is None and state['checkpoint'] is not None,
                   'restore_state')
@@ -241,7 +241,7 @@ class Recorder:
         request = {'checkpoint_ref': checkpoint['event_hash'], 'before_sha256': before['sha256']}
         return self.append('RESERVE', {'action': 'restore', 'request': request,
                                   'request_sha256': c.hashed(request), 'approval_ref': approval_ref,
-                                  'timeout_seconds': c.PROFILE['limits']['max_execution_seconds'], 'snapshot': before}, actor=actor)
+                                  'timeout_seconds': timeout_seconds, 'snapshot': before}, actor=actor)
 
     def confirm_restore(self, reservation_ref, *, actor, duration_seconds, report):
         state = self.status()

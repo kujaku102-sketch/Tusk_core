@@ -6,7 +6,7 @@
     "external_evidence": true,
     "pre_result_recovery": true,
     "post_result_recovery": true,
-    "rollback": "explicit_adapter_existing_files",
+    "rollback": "explicit_adapter_existing_files_and_created_removal",
     "signed_identity": false,
     "automatic_publication": false,
     "automatic_activation": false,

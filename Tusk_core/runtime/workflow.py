@@ -101,7 +101,8 @@ def reduce(history):
             state['restore'] = event
         elif kind == 'RESERVE':
             state['launches'] += 1
-            state['execution_seconds'] += payload['timeout_seconds']
+            if payload['timeout_seconds'] is not None:
+                state['execution_seconds'] += payload['timeout_seconds']
             state['pending'] = event
         elif kind == 'RECEIPT':
             state['pending'] = None

@@ -136,12 +136,21 @@ def read_regular(path, maximum):
     return raw
 
 
+def is_absent(item):
+    return item.get('state') == 'absent'
+
+
 def snapshot(root, scope, store=None):
     root = checked_path(root, directory=True)
     files = []
     for name in paths(scope):
-        path = checked_path(root / name, directory=False)
+        path = checked_path(root / name)
         require(path.is_relative_to(root), 'scope_escape')
+        require(not path.parent.exists() or path.parent.is_dir(), 'path_type')
+        if not path.exists():
+            files.append({'path': name, 'state': 'absent'})
+            continue
+        path = checked_path(path, directory=False)
         raw = read_regular(path, PROFILE['limits']['max_file_bytes'])
         sha = digest(raw)
         if store is not None:
@@ -158,6 +167,9 @@ def validate_snapshot(value):
     scope = paths([item['path'] for item in value['files']])
     require(scope == [item['path'] for item in value['files']], 'snapshot_order')
     for item in value['files']:
+        if set(item) == {'path', 'state'}:
+            require(item['state'] == 'absent', 'snapshot_entry')
+            continue
         require(set(item) == {'path', 'identity', 'size', 'sha256'} and type(item['size']) is int and
                 0 <= item['size'] <= PROFILE['limits']['max_file_bytes'] and
                 type(item['identity']) is list and len(item['identity']) == 2 and
@@ -165,8 +177,23 @@ def validate_snapshot(value):
 
 
 def same_bytes(left, right):
-    return [(item['path'], item['size'], item['sha256']) for item in left['files']] == \
-           [(item['path'], item['size'], item['sha256']) for item in right['files']]
+    def key(item):
+        return (item['path'], None, None) if is_absent(item) else (item['path'], item['size'], item['sha256'])
+    return [key(item) for item in left['files']] == [key(item) for item in right['files']]
+
+
+def restore_blocked(before, target):
+    present = {item['path'] for item in before['files'] if not is_absent(item)}
+    return any(not is_absent(item) and item['path'] not in present for item in target['files'])
+
+
+def restore_remove(before, target):
+    wanted = {item['path'] for item in target['files'] if is_absent(item)}
+    return sorted(item['path'] for item in before['files'] if not is_absent(item) and item['path'] in wanted)
+
+
+def restore_target(target, remove):
+    return hashed({'checkpoint_sha256': target['sha256'], 'remove': remove})
 
 
 def validate_envelope(event, history, expected_contract):

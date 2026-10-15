@@ -144,37 +144,59 @@
           "minItems": 1,
           "maxItems": 64,
           "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "path",
-              "identity",
-              "size",
-              "sha256"
-            ],
-            "properties": {
-              "path": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 16384
-              },
-              "identity": {
-                "type": "array",
-                "minItems": 2,
-                "maxItems": 2,
-                "items": {
-                  "type": "integer",
-                  "minimum": 0
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "path",
+                  "identity",
+                  "size",
+                  "sha256"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 16384
+                  },
+                  "identity": {
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "size": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "sha256": {
+                    "$ref": "#/$defs/hash"
+                  }
                 }
               },
-              "size": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "sha256": {
-                "$ref": "#/$defs/hash"
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "path",
+                  "state"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 16384
+                  },
+                  "state": {
+                    "const": "absent"
+                  }
+                }
               }
-            }
+            ]
           }
         }
       }
@@ -464,6 +486,7 @@
           "action": {
             "enum": [
               "work",
+              "max",
               "execute",
               "restore",
               "recovery",
@@ -720,8 +743,15 @@
             "$ref": "#/$defs/hash"
           },
           "timeout_seconds": {
-            "type": "integer",
-            "minimum": 1
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "snapshot": {
             "$ref": "#/$defs/snapshot"

@@ -48,7 +48,7 @@ Process LevelはP0〜P4とし、planの`risk`へ記録する。複数条件に�
 
 ## Mechanical correction
 
-補正は承認・編集・実行・テスト選定前に行い、宣言値を決して下げない。入力は宣言レベル、正規化済みworkspace相対の一意な対象パス(componentとeffect付き)、対象component、全操作フラグ、全Protected Surfaceとする。パスに`..`、絶対パス、重複、空componentを許さない。パスcomponentは対象component一覧に存在しなければならない。意味的リスクを名前から推測しない。
+補正は承認・編集・実行・テスト選定前に行い、宣言値を決して下げない。入力は宣言レベル、`classification`(対象component一覧、scopeと同じ順で1件ずつの対象パス(path・component・effect。effectはcreate/modify/delete/read_only)、全操作フラグ11種、全Protected Surface 9種)とする。パスに`..`、絶対パス、重複、空componentを許さない。パスcomponentは対象component一覧に存在しなければならない。内容と名前による判定は、profileに決めた規則で、上げる方向にだけ使う。規則は`config/policy-profile.json`の`classification_rules`に置き、規則に無いものは推測しない。
 
 下限は`P0=0`〜`P4=4`として次の最大値である。
 
@@ -61,9 +61,10 @@ corrected_process_level = max(declared, scope, operation, protected_surface)
 
 追加パス、component、true flag、厳しい保護下限は結果を低下させない。承認後の事実削除は下方補正でなくscope変更として再分類する。補正の根拠は宣言値、補正値、変更有無、各補正理由(rule/from/required/evidence)として記録する。
 
-必須値の欠落・不正値、非boolean flag、非正規化・workspace外パス、未知の保護面、根拠なし、異なる権威入力の矛盾は補正値を出さず`info_missing`で停止する。明示operation assertionsとflagの矛盾も同様である。自由文は機械根拠として解釈しない。
+必須値の欠落・不正値、非boolean flag、非正規化・workspace外パス、未知の保護面、根拠なし、異なる権威入力の矛盾は補正値を出さず`info_missing`で停止する。明示operation assertionsとflagの矛盾も同様である。自由文は機械根拠として解釈しない(profileの規則が見るのは、最初のPLANのbaselineの内容とscopeのpathだけである)。
 
-保護面の下限は、申告者がplanの`risk`へ反映する。下限より低いriskで申告しない。Coreはこれを検査しない。
+Coreは plan の classification から下限を計算し、申告と規則判定(`detected`)の厳しい方を採って`floor`・`protected`・`corrections`をplanに保存し、下限より低いriskを`risk_below_floor`で拒否する。規則判定が申告より厳しいときは拒否せず、判定の方へ上書きして`corrections`に記録する。判定は最初のPLANだけで行い、RESULTでは再判定しない。
+RESULTでは、最初のPLANのbaselineと比べて`read_only`の内容が変わった、または`modify`が無くなった場合を`effect_result_mismatch`で拒否する。申告`create`が無いまま、`delete`が残ったままの場合は拒否せず、RESULTの`unfulfilled`(「無いので作れ」「残っているので消せ」)に記録し、statusとfocusに出す。`unfulfilled`が残ってもCLOSE completedは止めない。
 
 ## Protected Surfaces(強制下限)
 

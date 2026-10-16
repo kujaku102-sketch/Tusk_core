@@ -14,7 +14,19 @@ record.start(
     {"source_ref": "owner-request", "text": "指定した変更をローカルで確認する"},
     "/absolute/path/to/source", ["app.py"],
     [{"path": "app.py", "contains": "def main"}],
-    implementer="developer", owner="owner",
+    implementer="developer", owner="owner", risk="P1",
+    classification={
+        "components": ["app"],
+        "paths": [{"path": "app.py", "component": "app", "effect": "modify"}],
+        "operations": {key: False for key in (
+            "external_app", "persistent_settings", "persistent_data", "migration",
+            "release", "distribution", "installer", "update_or_uninstall",
+            "destructive_or_irreversible", "security_boundary", "broad_user_data")},
+        "surfaces": {key: False for key in (
+            "security_boundary", "authentication", "secrets", "distribution_installer",
+            "destructive_operation", "user_data", "persistent_schema", "process_stop",
+            "external_app")},
+    },
 )
 record.open(actor="developer")
 # この間に、指定範囲のコードを編集する。
@@ -23,6 +35,8 @@ record.verify_static(actor="developer")
 record.close(actor="owner")
 ```
 
+classificationはscopeの各ファイルの作用、操作の種類、保護面の申告。Coreは申告とprofileの規則で
+ファイル内容から判定した結果の厳しい方から下限を計算し、下限より低いriskを拒否する。
 上の静的確認は指定した内容条件だけを検査する。機能試験が必要ならplanのchecksへ
 明示し、外部の試験結果を対象snapshotと結合して取り込む。
 P2以上、保護対象、公開候補では独立reviewが必要となる。

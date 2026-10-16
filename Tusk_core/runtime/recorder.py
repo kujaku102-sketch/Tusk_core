@@ -6,7 +6,7 @@ from . import contracts as c
 from . import authority
 from .protocol_registry import ProtocolRegistry
 from .storage import Store, publish, writer_lock
-from .workflow import checkpoint_snapshot, plan_payload, reduce
+from .workflow import checkpoint_snapshot, compute_unfulfilled, detect_snapshot, plan_payload, reduce
 
 _UNSET = object()
 
@@ -128,11 +128,14 @@ class Recorder:
         return c.snapshot(source, plan['scope'], self.store.put)
 
     def start(self, request, source, scope, requirements, *, implementer, owner,
-              intensity='LOW', risk='P0', stage='local', checks=None, protected=False,
+              classification, intensity='LOW', risk='P0', stage='local', checks=None,
               work_id=None, request_id=None):
+        names = c.paths(scope)
+        baseline = self._capture({'source': str(c.checked_path(source, directory=True)), 'scope': names})
+        detected = detect_snapshot(names, baseline, self.store.get)
         plan = plan_payload(request, source, scope, requirements, implementer=implementer, owner=owner,
-                            intensity=intensity, risk=risk, stage=stage, checks=checks, protected=protected)
-        baseline = self._capture(plan)
+                            classification=classification, detected=detected,
+                            intensity=intensity, risk=risk, stage=stage, checks=checks)
         return self.append('PLAN', {'plan': plan, 'baseline': baseline}, actor=owner,
                            work_id=uuid.uuid4().hex if work_id is None else work_id, generation=0, request_id=request_id)
 
@@ -143,7 +146,11 @@ class Recorder:
         return self.append('OPEN', {}, actor=actor, request_id=request_id)
 
     def result(self, *, actor, request_id=None):
-        return self.append('RESULT', {'snapshot': self._capture(self.status()['plan'])}, actor=actor, request_id=request_id)
+        plan = self.status()['plan']
+        snapshot = self._capture(plan)
+        return self.append('RESULT', {'snapshot': snapshot,
+                                      'unfulfilled': compute_unfulfilled(plan['classification'], snapshot)},
+                           actor=actor, request_id=request_id)
 
     def verification(self, check, passed, *, actor, purpose='acceptance', report=None, reason='', request_id=None):
         state = self.status()
@@ -309,7 +316,7 @@ class Recorder:
         state = self.status()
         return {'family_id': self.family, 'work_id': state['work_id'], 'generation': state['generation'],
                 'failures': state['failures'], 'corrections_total': state['corrections_total'],
-                'launches': state['launches'], 'execution_seconds': state['execution_seconds'],
+                'unfulfilled': state['unfulfilled'], 'launches': state['launches'], 'execution_seconds': state['execution_seconds'],
                 'checkpoint_ref': None if state['checkpoint'] is None else state['checkpoint']['event_hash'],
                 'pending_ref': None if state['pending'] is None else state['pending']['event_hash'],
                 'head': state['head']}

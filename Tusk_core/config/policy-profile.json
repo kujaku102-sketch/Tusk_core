@@ -26,5 +26,22 @@
   },
   "denied_segments": [".git", ".env", "secrets", "credentials", "truststore", "__pycache__"],
   "denied_suffixes": [".pem", ".pfx", ".p12", ".key"],
-  "denied_names": ["token.json", "credentials.json", "developer.key.json", "id_rsa", "id_ed25519"]
+  "denied_names": ["token.json", "credentials.json", "developer.key.json", "id_rsa", "id_ed25519"],
+  "classification_rules": {
+    "component": {"by": "first_path_segment"},
+    "operations": {
+      "persistent_settings": {"path_glob": ["config/**", "**/*.ini", "**/settings*.json"]},
+      "migration": {"path_glob": ["**/migrations/**"]},
+      "external_app": {"content": ["subprocess", "os.system", "Popen("]},
+      "destructive_or_irreversible": {"content": ["shutil.rmtree", "os.remove(", "unlink(", "DROP TABLE"]},
+      "security_boundary": {"content": ["chmod(", "icacls", "SeSecurityPrivilege"]}
+    },
+    "surfaces": {
+      "secrets": {"path_glob": ["**/*.pem"], "content": ["BEGIN PRIVATE KEY", "api_key", "password"]},
+      "persistent_schema": {"path_glob": ["**/*.schema.json", "**/schemas/**"]},
+      "process_stop": {"content": ["kill(", "terminate(", "taskkill", "signal."]},
+      "distribution_installer": {"path_glob": ["**/DISTRIBUTION-MANIFEST.json", "**/setup.py", "**/pyproject.toml", "**/*.iss"]},
+      "authentication": {"content": ["authenticate", "login(", "session_token"]}
+    }
+  }
 }

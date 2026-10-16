@@ -1,5 +1,6 @@
 from . import contracts as c
-from .workflow import checkpoint_snapshot, plan_payload, reduce
+from .workflow import (checkpoint_snapshot, compute_unfulfilled, detect_snapshot, effect_baseline_mismatch,
+                       effect_result_mismatch, plan_payload, reduce)
 
 
 def distinct(left, right):
@@ -18,7 +19,8 @@ def approval(state, ref, action, target):
 def validate_plan(value):
     expected = plan_payload(value['request'], value['source'], value['scope'], value['requirements'],
                             implementer=value['implementer'], owner=value['owner'], intensity=value['intensity'],
-                            risk=value['risk'], stage=value['stage'], checks=value['checks'], protected=value['protected'],
+                            risk=value['risk'], stage=value['stage'], checks=value['checks'],
+                            classification=value['classification'], detected=value['detected'],
                             validate_source=False)
     c.require(value == expected, 'plan_shape_or_route')
 
@@ -50,6 +52,10 @@ def validate(event, history, store, registry):
         validate_plan(payload['plan'])
         c.require(actor == payload['plan']['owner'], 'plan_owner')
         c.require([item['path'] for item in payload['baseline']['files']] == payload['plan']['scope'], 'baseline_scope')
+        found = detect_snapshot(payload['plan']['scope'], payload['baseline'], store.get)
+        c.require(found == payload['plan']['detected'], 'classification_detected_mismatch')
+        c.require(not effect_baseline_mismatch(payload['plan']['classification'], payload['baseline']),
+                  'effect_baseline_mismatch')
     elif kind == 'OPEN':
         c.require(state['status'] == 'planned' and actor == plan['implementer'], 'open_state_or_actor')
         c.require(state['development_failures'] < c.PROFILE['limits']['max_development_failures'], 'development_failure_budget')
@@ -64,6 +70,10 @@ def validate(event, history, store, registry):
     elif kind == 'RESULT':
         c.require(state['status'] == 'running' and actor == plan['implementer'], 'result_state_or_actor')
         c.require([item['path'] for item in payload['snapshot']['files']] == plan['scope'], 'result_scope')
+        c.require(not effect_result_mismatch(plan['classification'], history[0]['payload']['baseline'],
+                                             payload['snapshot']), 'effect_result_mismatch')
+        c.require(payload['unfulfilled'] == compute_unfulfilled(plan['classification'], payload['snapshot']),
+                  'result_unfulfilled_mismatch')
     elif kind == 'VERIFY':
         c.require(payload['purpose'] in ('development', 'acceptance') and type(payload['passed']) is bool,
                   'verification_shape')

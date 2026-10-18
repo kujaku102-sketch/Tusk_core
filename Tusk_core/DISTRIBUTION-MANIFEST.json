@@ -29,21 +29,21 @@
     },
     {
       "path": "README.md",
-      "bytes": 2175,
-      "sha256": "81ea1ad84c7b8228756660ccade3ae4c80eefe721e7fc4e60b69d48bddae661e"
+      "bytes": 2802,
+      "sha256": "186fab2b2203e0ce7d93ea5a9829a76a33185002149127352ae545212a6766f2"
     },
     {
       "path": "Tusk_core/AUTHORITY-MAP.json",
-      "bytes": 276,
-      "sha256": "ae59f28e94fc1b6a039c76b26183bd4f9062334920707a2cba25daef2ee997c5"
+      "bytes": 680,
+      "sha256": "a8e73541d7fa9c7a62fed84488e865e9c76cb36db04b64902248e3c374017d8a"
     },
     {
       "path": "Tusk_core/DISTRIBUTION-MANIFEST.json"
     },
     {
       "path": "Tusk_core/POLICY.md",
-      "bytes": 6944,
-      "sha256": "5792f6577ab71433d965a1dd8bab73649814fbafa5b5d4251d404678e922e197"
+      "bytes": 7601,
+      "sha256": "ec5f82f5ead6a18fd77bdbfdaf6de88985b24588b4981774e622473b3e6f5c39"
     },
     {
       "path": "Tusk_core/EXTENSION_POLICY.md",
@@ -52,8 +52,8 @@
     },
     {
       "path": "Tusk_core/config/policy-profile.json",
-      "bytes": 1050,
-      "sha256": "d7148ecd80df5391e7a355deeea2e8f1c7483fa2e821570eaa576556d0db9651"
+      "bytes": 1990,
+      "sha256": "c5e945eb8620f4bfc434b2b0291dcc5f8481f148efb6ffeeb183eb2d46b6bd29"
     },
     {
       "path": "Tusk_core/requirements.txt",
@@ -67,8 +67,8 @@
     },
     {
       "path": "Tusk_core/runtime/authority.py",
-      "bytes": 15687,
-      "sha256": "9d4dcd1dcff1d834208e1458bd8c9efa11dd025fc21f8c162efb5beda6a3ac9f"
+      "bytes": 17354,
+      "sha256": "7bcde574f9e1abf509cdcd02ae5242276fd0f21795d8b04ae0ba1dea39129f1c"
     },
     {
       "path": "Tusk_core/runtime/cli.py",
@@ -77,13 +77,13 @@
     },
     {
       "path": "Tusk_core/runtime/contracts.py",
-      "bytes": 8647,
-      "sha256": "ee0fc8059505c5c0b47273bdb676c5fd4a68afc495dcac520051e3cee3d1ee20"
+      "bytes": 9664,
+      "sha256": "f8383fc973db52c9d116d96a16ed9fd1efd444cd2a4792d09c2a01a94a8e46c5"
     },
     {
       "path": "Tusk_core/runtime/execution.py",
-      "bytes": 817,
-      "sha256": "c6f4deeb998e840bf99d67bf6400412c6d7aa31ebbdf8133b52f5231ce09665b"
+      "bytes": 1152,
+      "sha256": "ea9b29f4edea51236cfdaf2fc3c89a839c2f3aefad0c23e50cf07e7b231e4b6f"
     },
     {
       "path": "Tusk_core/runtime/protocol_registry.py",
@@ -92,8 +92,8 @@
     },
     {
       "path": "Tusk_core/runtime/recorder.py",
-      "bytes": 19098,
-      "sha256": "1daf11c3bcfe8ec3e37f67599389c2e5e2dfeadaff9b470cb3ad7b379a504f1e"
+      "bytes": 20214,
+      "sha256": "5cc4bd1c9b99ed3712fbea23778ba3da5fbd8287c5a6b0ec6c515ab9a1d3f505"
     },
     {
       "path": "Tusk_core/runtime/storage.py",
@@ -102,13 +102,63 @@
     },
     {
       "path": "Tusk_core/runtime/workflow.py",
-      "bytes": 6755,
-      "sha256": "a26fd4baaddecc6e74d44d8584074a3534dbf800d3ce8229e2c7b902913eb658"
+      "bytes": 16443,
+      "sha256": "169d427d34e7ced82899263c1c985e272296f88b621beff73428a5d496fe277d"
     },
     {
       "path": "Tusk_core/schemas/contract.schema.json",
-      "bytes": 17276,
-      "sha256": "ad73927f382763564e01095a3f1033280b9350730ab9ed1ba0b117be8619f1af"
+      "bytes": 27921,
+      "sha256": "d8bdd496eed241740b01e93f3f0610b1d0b0a14e33796156937ba17af2e30753"
+    },
+    {
+      "path": "Tusk_core/AGENTS.md",
+      "bytes": 1580,
+      "sha256": "e457a180fc73de7d91141da211fccb8b520d085962eee46e27ad3f03533020c4"
+    },
+    {
+      "path": "Tusk_core/AUTHORITY_SEPARATION.md",
+      "bytes": 4345,
+      "sha256": "74e4bb4852e70c2027ad3a2c649a35c9c62119ebe3f3a5b643b8017e2e9bdd75"
+    },
+    {
+      "path": "Tusk_core/ERROR_CODES.md",
+      "bytes": 1471,
+      "sha256": "345ec85e660090f9c81d54f80dbcdaec175db5db1e4e28eaba53472a311f769d"
+    },
+    {
+      "path": "Tusk_core/ERROR_POLICY.md",
+      "bytes": 2277,
+      "sha256": "5ac6cf75bb20756dbf75e173bf76d1ec23f2ab78658baca383971dc66c950cb1"
+    },
+    {
+      "path": "Tusk_core/GENERAL.md",
+      "bytes": 5860,
+      "sha256": "95ec426174628ec42d419ce7f3303bd1668e71c78ee037345ce41e0173d26d46"
+    },
+    {
+      "path": "Tusk_core/INTEGRITY_POLICY.md",
+      "bytes": 1227,
+      "sha256": "7f983a5f698e28abbc7298507b2d22ee0412e5b347a21f5e3bdfc35164e058f6"
+    },
+    {
+      "path": "Tusk_core/PROCESS_POLICY.md",
+      "bytes": 14133,
+      "sha256": "adf1160812d9b1df158fe1182b7e081fd5ffe82ec9e4da9c9bd7338b10408c74"
+    },
+    {
+      "path": "Tusk_core/README.md",
+      "bytes": 602,
+      "sha256": "4fcdf185f8df4072d32093ea2874f0a92525abf38821d2f52a949cd9880019f7"
+    },
+    {
+      "path": "Tusk_core/ROUTING_POLICY.md",
+      "bytes": 5114,
+      "sha256": "223c3939da1943c733f5ed062d8352fc5a5e16792d3c62bc736f513809c0410f"
+    },
+    {
+      "path": "Tusk_core/START-HERE.md",
+      "bytes": 532,
+      "sha256": "d820b4c366bee3085ad326341016d2dffb7407c1a1358eef65135c38bbd407fb"
     }
   ]
 }

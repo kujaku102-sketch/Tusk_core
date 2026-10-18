@@ -6,7 +6,7 @@
     "external_evidence": true,
     "pre_result_recovery": true,
     "post_result_recovery": true,
-    "rollback": "explicit_adapter_existing_files",
+    "rollback": "explicit_adapter_existing_files_and_created_removal",
     "signed_identity": false,
     "automatic_publication": false,
     "automatic_activation": false,
@@ -22,11 +22,26 @@
     "max_corrections": 3,
     "max_generations": 3,
     "max_launches": 40,
-    "max_development_failures": 2,
-    "max_execution_seconds": 30,
-    "max_family_execution_seconds": 1800
+    "max_development_failures": 2
   },
   "denied_segments": [".git", ".env", "secrets", "credentials", "truststore", "__pycache__"],
   "denied_suffixes": [".pem", ".pfx", ".p12", ".key"],
-  "denied_names": ["token.json", "credentials.json", "developer.key.json", "id_rsa", "id_ed25519"]
+  "denied_names": ["token.json", "credentials.json", "developer.key.json", "id_rsa", "id_ed25519"],
+  "classification_rules": {
+    "component": {"by": "first_path_segment"},
+    "operations": {
+      "persistent_settings": {"path_glob": ["config/**", "**/*.ini", "**/settings*.json"]},
+      "migration": {"path_glob": ["**/migrations/**"]},
+      "external_app": {"content": ["subprocess", "os.system", "Popen("]},
+      "destructive_or_irreversible": {"content": ["shutil.rmtree", "os.remove(", "unlink(", "DROP TABLE"]},
+      "security_boundary": {"content": ["chmod(", "icacls", "SeSecurityPrivilege"]}
+    },
+    "surfaces": {
+      "secrets": {"content":["BEGIN PRIVATE KEY", "api_key", "password"]},
+      "persistent_schema": {"path_glob": ["**/*.schema.json", "**/schemas/**"]},
+      "process_stop": {"content": ["kill(", "terminate(", "taskkill", "signal."]},
+      "distribution_installer": {"path_glob": ["**/DISTRIBUTION-MANIFEST.json", "**/setup.py", "**/pyproject.toml", "**/*.iss"]},
+      "authentication": {"content": ["authenticate", "login(", "session_token"]}
+    }
+  }
 }

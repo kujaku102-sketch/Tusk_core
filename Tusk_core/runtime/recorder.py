@@ -6,7 +6,7 @@ from . import contracts as c
 from . import authority
 from .protocol_registry import ProtocolRegistry
 from .storage import Store, publish, writer_lock
-from .workflow import checkpoint_snapshot, plan_payload, reduce
+from .workflow import checkpoint_snapshot, compute_unfulfilled, detect_snapshot, plan_payload, reduce
 
 _UNSET = object()
 
@@ -128,11 +128,14 @@ class Recorder:
         return c.snapshot(source, plan['scope'], self.store.put)
 
     def start(self, request, source, scope, requirements, *, implementer, owner,
-              intensity='LOW', risk='P0', stage='local', checks=None, protected=False,
+              classification, intensity='LOW', risk='P0', stage='local', checks=None,
               work_id=None, request_id=None):
+        names = c.paths(scope)
+        baseline = self._capture({'source': str(c.checked_path(source, directory=True)), 'scope': names})
+        detected = detect_snapshot(names, baseline, self.store.get)
         plan = plan_payload(request, source, scope, requirements, implementer=implementer, owner=owner,
-                            intensity=intensity, risk=risk, stage=stage, checks=checks, protected=protected)
-        baseline = self._capture(plan)
+                            classification=classification, detected=detected,
+                            intensity=intensity, risk=risk, stage=stage, checks=checks)
         return self.append('PLAN', {'plan': plan, 'baseline': baseline}, actor=owner,
                            work_id=uuid.uuid4().hex if work_id is None else work_id, generation=0, request_id=request_id)
 
@@ -143,7 +146,11 @@ class Recorder:
         return self.append('OPEN', {}, actor=actor, request_id=request_id)
 
     def result(self, *, actor, request_id=None):
-        return self.append('RESULT', {'snapshot': self._capture(self.status()['plan'])}, actor=actor, request_id=request_id)
+        plan = self.status()['plan']
+        snapshot = self._capture(plan)
+        return self.append('RESULT', {'snapshot': snapshot,
+                                      'unfulfilled': compute_unfulfilled(plan['classification'], snapshot)},
+                           actor=actor, request_id=request_id)
 
     def verification(self, check, passed, *, actor, purpose='acceptance', report=None, reason='', request_id=None):
         state = self.status()
@@ -165,12 +172,13 @@ class Recorder:
         findings = []
         for requirement in state['plan']['requirements']:
             entry = next(item for item in current['files'] if item['path'] == requirement['path'])
-            raw = self.store.get(entry['sha256'])
-            if 'sha256' in requirement:
+            if c.is_absent(entry):
+                passed = False
+            elif 'sha256' in requirement:
                 passed = entry['sha256'] == requirement['sha256']
             else:
                 try:
-                    passed = requirement['contains'] in raw.decode('utf-8')
+                    passed = requirement['contains'] in self.store.get(entry['sha256']).decode('utf-8')
                 except UnicodeError:
                     passed = False
             if not passed:
@@ -224,24 +232,31 @@ class Recorder:
                                        'corrections_total': state['corrections_total']}, actor=actor,
                            generation=state['generation'] + 1)
 
-    def prepare_restore(self, approval_ref, *, actor):
+    def prepare_restore(self, approval_ref, *, actor, timeout_seconds=None):
         state = self.status()
         c.require(state['status'] == 'stopped' and state['pending'] is None and state['checkpoint'] is not None,
                   'restore_state')
         checkpoint = state['checkpoint']
-        authority.approval(state, approval_ref, 'restore', checkpoint_snapshot(checkpoint)['sha256'])
         c.require(actor == state['plan']['owner'], 'restore_actor')
-        c.require(not any(event['type'] == 'RESTORE' and event['payload']['approval_ref'] == approval_ref
-                          for event in self.events()), 'approval_used')
         before = self._capture(state['plan'])
         target = checkpoint_snapshot(checkpoint)
+        c.require(not c.restore_blocked(before, target), 'restore_absent_unsupported')
+        remove = c.restore_remove(before, target)
+        authority.approval(state, approval_ref, 'restore', c.restore_target(target, remove))
+        c.require(not any(event['type'] == 'RESTORE' and event['payload']['approval_ref'] == approval_ref
+                          for event in self.events()), 'approval_used')
         c.require(before['root_identity'] == target['root_identity'] and
-                  [(item['path'], item['identity']) for item in before['files']] ==
-                  [(item['path'], item['identity']) for item in target['files']], 'restore_identity_changed')
-        request = {'checkpoint_ref': checkpoint['event_hash'], 'before_sha256': before['sha256']}
+                  self._both_present(before, target) == self._both_present(target, before), 'restore_identity_changed')
+        request = {'checkpoint_ref': checkpoint['event_hash'], 'before_sha256': before['sha256'], 'remove': remove}
         return self.append('RESERVE', {'action': 'restore', 'request': request,
                                   'request_sha256': c.hashed(request), 'approval_ref': approval_ref,
-                                  'timeout_seconds': c.PROFILE['limits']['max_execution_seconds'], 'snapshot': before}, actor=actor)
+                                  'timeout_seconds': timeout_seconds, 'snapshot': before}, actor=actor)
+
+    @staticmethod
+    def _both_present(left, right):
+        other = {item['path'] for item in right['files'] if not c.is_absent(item)}
+        return [(item['path'], item['identity']) for item in left['files']
+                if not c.is_absent(item) and item['path'] in other]
 
     def confirm_restore(self, reservation_ref, *, actor, duration_seconds, report):
         state = self.status()
@@ -250,9 +265,11 @@ class Recorder:
                   pending['payload']['action'] == 'restore', 'restore_reservation')
         before = pending['payload']['snapshot']
         after = self._capture(state['plan'])
+        removed = sorted(item['path'] for item in before['files'] if not c.is_absent(item) and
+                         next(other for other in after['files'] if other['path'] == item['path']).get('state') == 'absent')
+        c.require(removed == pending['payload']['request']['remove'], 'restore_remove_unapplied')
         c.require(c.same_bytes(after, checkpoint_snapshot(state['checkpoint'])) and
-                  [(item['path'], item['identity']) for item in before['files']] ==
-                  [(item['path'], item['identity']) for item in after['files']], 'restore_failed')
+                  self._both_present(before, after) == self._both_present(after, before), 'restore_failed')
         self.receipt(reservation_ref, actor=actor, completed=True, duration_seconds=duration_seconds, report=report)
         return self.append('RESTORE', {'checkpoint_ref': state['checkpoint']['event_hash'],
                                        'approval_ref': pending['payload']['approval_ref'],
@@ -269,7 +286,7 @@ class Recorder:
                                         'corrections_total': state['corrections_total']}, actor=actor,
                            work_id=uuid.uuid4().hex if work_id is None else work_id)
 
-    def reserve(self, request, approval_ref, *, actor, timeout_seconds=10, request_id=None):
+    def reserve(self, request, approval_ref, *, actor, timeout_seconds=None, request_id=None):
         current = self._capture(self.status()['plan'])
         return self.append('RESERVE', {'action': 'execute', 'request': request, 'request_sha256': c.hashed(request),
                                       'approval_ref': approval_ref, 'timeout_seconds': timeout_seconds,
@@ -299,7 +316,7 @@ class Recorder:
         state = self.status()
         return {'family_id': self.family, 'work_id': state['work_id'], 'generation': state['generation'],
                 'failures': state['failures'], 'corrections_total': state['corrections_total'],
-                'launches': state['launches'], 'execution_seconds': state['execution_seconds'],
+                'unfulfilled': state['unfulfilled'], 'launches': state['launches'], 'execution_seconds': state['execution_seconds'],
                 'checkpoint_ref': None if state['checkpoint'] is None else state['checkpoint']['event_hash'],
                 'pending_ref': None if state['pending'] is None else state['pending']['event_hash'],
                 'head': state['head']}

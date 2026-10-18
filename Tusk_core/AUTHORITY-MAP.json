@@ -5,6 +5,16 @@
     "extension_contract": "EXTENSION_POLICY.md",
     "machine_contract": "schemas/contract.schema.json",
     "profile": "config/policy-profile.json",
-    "distribution": "DISTRIBUTION-MANIFEST.json"
+    "distribution": "DISTRIBUTION-MANIFEST.json",
+    "common_implementation": "GENERAL.md",
+    "agent_contract": "AGENTS.md",
+    "readme": "README.md",
+    "start_here": "START-HERE.md",
+    "implementation_routing": "ROUTING_POLICY.md",
+    "process_safety": "PROCESS_POLICY.md",
+    "authority_roles": "AUTHORITY_SEPARATION.md",
+    "error_grammar": "ERROR_POLICY.md",
+    "error_registry": "ERROR_CODES.md",
+    "integrity": "INTEGRITY_POLICY.md"
   }
 }

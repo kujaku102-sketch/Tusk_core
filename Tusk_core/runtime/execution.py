@@ -15,4 +15,11 @@ def replacement_for(recorder, reservation_ref):
     c.require(pending is not None and pending['event_hash'] == reservation_ref and
               pending['payload']['action'] == 'restore', 'restore_reservation')
     value = checkpoint_snapshot(state['checkpoint'])
-    return {item['path']: recorder.store.get(item['sha256']) for item in value['files']}
+    return {item['path']: recorder.store.get(item['sha256']) for item in value['files'] if not c.is_absent(item)}
+
+
+def removals_for(recorder, reservation_ref):
+    pending = recorder.status()['pending']
+    c.require(pending is not None and pending['event_hash'] == reservation_ref and
+              pending['payload']['action'] == 'restore', 'restore_reservation')
+    return list(pending['payload']['request']['remove'])

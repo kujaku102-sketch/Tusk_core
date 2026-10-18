@@ -1,5 +1,6 @@
 from . import contracts as c
-from .workflow import checkpoint_snapshot, plan_payload, reduce
+from .workflow import (checkpoint_snapshot, compute_unfulfilled, detect_snapshot, effect_baseline_mismatch,
+                       effect_result_mismatch, plan_payload, reduce)
 
 
 def distinct(left, right):
@@ -18,7 +19,8 @@ def approval(state, ref, action, target):
 def validate_plan(value):
     expected = plan_payload(value['request'], value['source'], value['scope'], value['requirements'],
                             implementer=value['implementer'], owner=value['owner'], intensity=value['intensity'],
-                            risk=value['risk'], stage=value['stage'], checks=value['checks'], protected=value['protected'],
+                            risk=value['risk'], stage=value['stage'], checks=value['checks'],
+                            classification=value['classification'], detected=value['detected'],
                             validate_source=False)
     c.require(value == expected, 'plan_shape_or_route')
 
@@ -42,24 +44,36 @@ def validate(event, history, store, registry):
                 c.require(payload[name]['root_identity'] == history[0]['payload']['baseline']['root_identity'],
                           'snapshot_root_identity')
             for item in payload[name]['files']:
-                raw = store.get(item['sha256'])
-                c.require(len(raw) == item['size'], 'snapshot_object_size')
+                if not c.is_absent(item):
+                    raw = store.get(item['sha256'])
+                    c.require(len(raw) == item['size'], 'snapshot_object_size')
     if kind == 'PLAN':
         c.require(not history and event['generation'] == 0, 'plan_singleton')
         validate_plan(payload['plan'])
         c.require(actor == payload['plan']['owner'], 'plan_owner')
         c.require([item['path'] for item in payload['baseline']['files']] == payload['plan']['scope'], 'baseline_scope')
+        found = detect_snapshot(payload['plan']['scope'], payload['baseline'], store.get)
+        c.require(found == payload['plan']['detected'], 'classification_detected_mismatch')
+        c.require(not effect_baseline_mismatch(payload['plan']['classification'], payload['baseline']),
+                  'effect_baseline_mismatch')
     elif kind == 'OPEN':
         c.require(state['status'] == 'planned' and actor == plan['implementer'], 'open_state_or_actor')
         c.require(state['development_failures'] < c.PROFILE['limits']['max_development_failures'], 'development_failure_budget')
         if plan['independent_review']:
             c.require('design' in state['reviews'], 'design_review_required')
-        if plan['protected'] or plan['risk'] in ('P2', 'P3', 'P4'):
+        if plan['intensity'] == 'MAX':
+            c.require(any(e['payload']['action'] == 'max' and e['payload']['target'] == state['plan_ref']
+                          and e['event_hash'] not in state['revoked'] for e in state['approvals']), 'max_approval_required')
+        if plan['risk'] == 'P4':
             c.require(any(e['payload']['action'] == 'work' and e['payload']['target'] == state['plan_ref']
                           and e['event_hash'] not in state['revoked'] for e in state['approvals']), 'work_approval_required')
     elif kind == 'RESULT':
         c.require(state['status'] == 'running' and actor == plan['implementer'], 'result_state_or_actor')
         c.require([item['path'] for item in payload['snapshot']['files']] == plan['scope'], 'result_scope')
+        c.require(not effect_result_mismatch(plan['classification'], history[0]['payload']['baseline'],
+                                             payload['snapshot']), 'effect_result_mismatch')
+        c.require(payload['unfulfilled'] == compute_unfulfilled(plan['classification'], payload['snapshot']),
+                  'result_unfulfilled_mismatch')
     elif kind == 'VERIFY':
         c.require(payload['purpose'] in ('development', 'acceptance') and type(payload['passed']) is bool,
                   'verification_shape')
@@ -76,12 +90,13 @@ def validate(event, history, store, registry):
                 findings = []
                 for requirement in plan['requirements']:
                     item = next(entry for entry in state['result']['files'] if entry['path'] == requirement['path'])
-                    raw = store.get(item['sha256'])
-                    if 'sha256' in requirement:
+                    if c.is_absent(item):
+                        passed = False
+                    elif 'sha256' in requirement:
                         passed = item['sha256'] == requirement['sha256']
                     else:
                         try:
-                            passed = requirement['contains'] in raw.decode('utf-8')
+                            passed = requirement['contains'] in store.get(item['sha256']).decode('utf-8')
                         except UnicodeError:
                             passed = False
                     if not passed:
@@ -98,7 +113,7 @@ def validate(event, history, store, registry):
                   state['status'] == ('planned' if payload['phase'] == 'design' else 'result'), 'review_binding')
     elif kind == 'APPROVAL':
         c.require(actor == plan['owner'] and payload['plan_ref'] == state['plan_ref'] and
-                  payload['action'] in ('work', 'execute', 'restore', 'recovery', 'publish', 'activate') and
+                  payload['action'] in ('work', 'max', 'execute', 'restore', 'recovery', 'publish', 'activate') and
                   payload['source_ref'] and payload['text'], 'approval_owner_or_scope')
         c.require(state['status'] not in ('abandoned',), 'approval_terminal')
         if payload['action'] in ('publish', 'activate'):
@@ -149,7 +164,9 @@ def validate(event, history, store, registry):
         c.require(state['status'] == 'stopped' and state['checkpoint'] is not None and actor == plan['owner'], 'restore_state')
         checkpoint = state['checkpoint']
         c.require(payload['checkpoint_ref'] == checkpoint['event_hash'], 'restore_checkpoint')
-        approval(state, payload['approval_ref'], 'restore', checkpoint_snapshot(checkpoint)['sha256'])
+        c.require(not c.restore_blocked(payload['before'], checkpoint_snapshot(checkpoint)), 'restore_absent_unsupported')
+        approval(state, payload['approval_ref'], 'restore',
+                 c.restore_target(checkpoint_snapshot(checkpoint), c.restore_remove(payload['before'], checkpoint_snapshot(checkpoint))))
         c.require(not any(e['type'] == 'RESTORE' and e['payload']['approval_ref'] == payload['approval_ref'] for e in history),
                   'approval_used')
         c.require(c.same_bytes(payload['after'], checkpoint_snapshot(checkpoint)), 'restore_readback')
@@ -187,17 +204,20 @@ def validate(event, history, store, registry):
         c.require(state['status'] == ('running' if action == 'execute' else 'stopped') and
                   actor == (plan['implementer'] if action == 'execute' else plan['owner']), 'execution_state')
         c.require(state['launches'] < c.PROFILE['limits']['max_launches'], 'launch_budget')
-        c.require(type(payload['timeout_seconds']) is int and 0 < payload['timeout_seconds'] <=
-                  c.PROFILE['limits']['max_execution_seconds'], 'execution_timeout')
-        c.require(state['execution_seconds'] + payload['timeout_seconds'] <=
-                  c.PROFILE['limits']['max_family_execution_seconds'], 'execution_time_budget')
+        c.require(payload['timeout_seconds'] is None or
+                  (type(payload['timeout_seconds']) is int and payload['timeout_seconds'] > 0), 'execution_timeout')
         c.require(payload['request_sha256'] == c.hashed(payload['request']), 'execution_request_hash')
-        target = payload['request_sha256'] if action == 'execute' else checkpoint_snapshot(state['checkpoint'])['sha256']
+        target = payload['request_sha256']
         if action == 'execute':
             c.require(payload['request'].get('input_snapshot_sha256') == payload['snapshot']['sha256'], 'execution_input_binding')
         else:
+            checkpoint = checkpoint_snapshot(state['checkpoint'])
+            c.require(not c.restore_blocked(payload['snapshot'], checkpoint), 'restore_absent_unsupported')
+            remove = c.restore_remove(payload['snapshot'], checkpoint)
             c.require(payload['request'].get('checkpoint_ref') == state['checkpoint']['event_hash'] and
                       payload['request'].get('before_sha256') == payload['snapshot']['sha256'], 'restore_request_binding')
+            c.require(payload['request'].get('remove') == remove, 'restore_remove_mismatch')
+            target = c.restore_target(checkpoint, remove)
         approval(state, payload['approval_ref'], action, target)
         c.require(not any(e['type'] == 'RESERVE' and e['payload']['approval_ref'] == payload['approval_ref'] for e in history),
                   'approval_used')
@@ -207,7 +227,8 @@ def validate(event, history, store, registry):
                   actor == (plan['implementer'] if pending['payload']['action'] == 'execute' else plan['owner']),
                   'receipt_reservation')
         c.require(type(payload['completed']) is bool and type(payload['duration_seconds']) in (int, float) and
-                  0 <= payload['duration_seconds'] <= pending['payload']['timeout_seconds'], 'receipt_duration')
+                  payload['duration_seconds'] >= 0 and (pending['payload']['timeout_seconds'] is None or
+                  payload['duration_seconds'] <= pending['payload']['timeout_seconds']), 'receipt_duration')
         c.require(payload['request_sha256'] == pending['payload']['request_sha256'], 'receipt_request')
         store.get(payload['report_sha256'])
         if payload['completed']:

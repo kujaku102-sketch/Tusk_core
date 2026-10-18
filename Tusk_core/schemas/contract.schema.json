@@ -144,37 +144,59 @@
           "minItems": 1,
           "maxItems": 64,
           "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "path",
-              "identity",
-              "size",
-              "sha256"
-            ],
-            "properties": {
-              "path": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 16384
-              },
-              "identity": {
-                "type": "array",
-                "minItems": 2,
-                "maxItems": 2,
-                "items": {
-                  "type": "integer",
-                  "minimum": 0
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "path",
+                  "identity",
+                  "size",
+                  "sha256"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 16384
+                  },
+                  "identity": {
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "size": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "sha256": {
+                    "$ref": "#/$defs/hash"
+                  }
                 }
               },
-              "size": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "sha256": {
-                "$ref": "#/$defs/hash"
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "path",
+                  "state"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 16384
+                  },
+                  "state": {
+                    "const": "absent"
+                  }
+                }
               }
-            }
+            ]
           }
         }
       }
@@ -194,7 +216,11 @@
         "stage",
         "checks",
         "independent_review",
-        "protected"
+        "protected",
+        "classification",
+        "detected",
+        "floor",
+        "corrections"
       ],
       "properties": {
         "request": {
@@ -327,6 +353,53 @@
         },
         "protected": {
           "type": "boolean"
+        },
+        "classification": {
+          "$ref": "#/$defs/classification"
+        },
+        "detected": {
+          "$ref": "#/$defs/detected"
+        },
+        "floor": {
+          "enum": [
+            "P0",
+            "P1",
+            "P2",
+            "P3",
+            "P4"
+          ]
+        },
+        "corrections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rule",
+              "required",
+              "evidence"
+            ],
+            "properties": {
+              "rule": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "required": {
+                "enum": [
+                  "P0",
+                  "P1",
+                  "P2",
+                  "P3",
+                  "P4"
+                ]
+              },
+              "evidence": {
+                "type": "string",
+                "maxLength": 16384
+              }
+            }
+          }
         }
       }
     },
@@ -357,11 +430,15 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "snapshot"
+          "snapshot",
+          "unfulfilled"
         ],
         "properties": {
           "snapshot": {
             "$ref": "#/$defs/snapshot"
+          },
+          "unfulfilled": {
+            "$ref": "#/$defs/unfulfilled"
           }
         }
       },
@@ -464,6 +541,7 @@
           "action": {
             "enum": [
               "work",
+              "max",
               "execute",
               "restore",
               "recovery",
@@ -720,9 +798,15 @@
             "$ref": "#/$defs/hash"
           },
           "timeout_seconds": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 30
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "snapshot": {
             "$ref": "#/$defs/snapshot"
@@ -753,8 +837,7 @@
           },
           "duration_seconds": {
             "type": "number",
-            "minimum": 0,
-            "maximum": 30
+            "minimum": 0
           },
           "report_sha256": {
             "$ref": "#/$defs/hash"
@@ -775,6 +858,345 @@
         ],
         "properties": {
           "kind": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          }
+        }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "components",
+        "paths",
+        "operations",
+        "surfaces"
+      ],
+      "properties": {
+        "components": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          }
+        },
+        "paths": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "component",
+              "effect"
+            ],
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "component": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "effect": {
+                "enum": [
+                  "create",
+                  "modify",
+                  "delete",
+                  "read_only"
+                ]
+              }
+            }
+          }
+        },
+        "operations": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "external_app",
+            "persistent_settings",
+            "persistent_data",
+            "migration",
+            "release",
+            "distribution",
+            "installer",
+            "update_or_uninstall",
+            "destructive_or_irreversible",
+            "security_boundary",
+            "broad_user_data"
+          ],
+          "properties": {
+            "external_app": {
+              "type": "boolean"
+            },
+            "persistent_settings": {
+              "type": "boolean"
+            },
+            "persistent_data": {
+              "type": "boolean"
+            },
+            "migration": {
+              "type": "boolean"
+            },
+            "release": {
+              "type": "boolean"
+            },
+            "distribution": {
+              "type": "boolean"
+            },
+            "installer": {
+              "type": "boolean"
+            },
+            "update_or_uninstall": {
+              "type": "boolean"
+            },
+            "destructive_or_irreversible": {
+              "type": "boolean"
+            },
+            "security_boundary": {
+              "type": "boolean"
+            },
+            "broad_user_data": {
+              "type": "boolean"
+            }
+          }
+        },
+        "surfaces": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "security_boundary",
+            "authentication",
+            "secrets",
+            "distribution_installer",
+            "destructive_operation",
+            "user_data",
+            "persistent_schema",
+            "process_stop",
+            "external_app"
+          ],
+          "properties": {
+            "security_boundary": {
+              "type": "boolean"
+            },
+            "authentication": {
+              "type": "boolean"
+            },
+            "secrets": {
+              "type": "boolean"
+            },
+            "distribution_installer": {
+              "type": "boolean"
+            },
+            "destructive_operation": {
+              "type": "boolean"
+            },
+            "user_data": {
+              "type": "boolean"
+            },
+            "persistent_schema": {
+              "type": "boolean"
+            },
+            "process_stop": {
+              "type": "boolean"
+            },
+            "external_app": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "detected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "components",
+        "operations",
+        "surfaces",
+        "rules"
+      ],
+      "properties": {
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          }
+        },
+        "operations": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "external_app",
+            "persistent_settings",
+            "persistent_data",
+            "migration",
+            "release",
+            "distribution",
+            "installer",
+            "update_or_uninstall",
+            "destructive_or_irreversible",
+            "security_boundary",
+            "broad_user_data"
+          ],
+          "properties": {
+            "external_app": {
+              "type": "boolean"
+            },
+            "persistent_settings": {
+              "type": "boolean"
+            },
+            "persistent_data": {
+              "type": "boolean"
+            },
+            "migration": {
+              "type": "boolean"
+            },
+            "release": {
+              "type": "boolean"
+            },
+            "distribution": {
+              "type": "boolean"
+            },
+            "installer": {
+              "type": "boolean"
+            },
+            "update_or_uninstall": {
+              "type": "boolean"
+            },
+            "destructive_or_irreversible": {
+              "type": "boolean"
+            },
+            "security_boundary": {
+              "type": "boolean"
+            },
+            "broad_user_data": {
+              "type": "boolean"
+            }
+          }
+        },
+        "surfaces": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "security_boundary",
+            "authentication",
+            "secrets",
+            "distribution_installer",
+            "destructive_operation",
+            "user_data",
+            "persistent_schema",
+            "process_stop",
+            "external_app"
+          ],
+          "properties": {
+            "security_boundary": {
+              "type": "boolean"
+            },
+            "authentication": {
+              "type": "boolean"
+            },
+            "secrets": {
+              "type": "boolean"
+            },
+            "distribution_installer": {
+              "type": "boolean"
+            },
+            "destructive_operation": {
+              "type": "boolean"
+            },
+            "user_data": {
+              "type": "boolean"
+            },
+            "persistent_schema": {
+              "type": "boolean"
+            },
+            "process_stop": {
+              "type": "boolean"
+            },
+            "external_app": {
+              "type": "boolean"
+            }
+          }
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "key",
+              "rule",
+              "pattern",
+              "path"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "key": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "rule": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "pattern": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 16384
+              }
+            }
+          }
+        }
+      }
+    },
+    "unfulfilled": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "effect",
+          "message"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 16384
+          },
+          "effect": {
+            "enum": [
+              "create",
+              "delete"
+            ]
+          },
+          "message": {
             "type": "string",
             "minLength": 1,
             "maxLength": 16384

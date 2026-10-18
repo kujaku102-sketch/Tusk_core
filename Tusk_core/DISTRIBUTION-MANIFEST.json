@@ -52,8 +52,8 @@
     },
     {
       "path": "Tusk_core/config/policy-profile.json",
-      "bytes": 2018,
-      "sha256": "2b6b63d54e6afbbf6130c29f7dac0f1b679cc59ccdaaf12991bc6236c3c94965"
+      "bytes": 1990,
+      "sha256": "c5e945eb8620f4bfc434b2b0291dcc5f8481f148efb6ffeeb183eb2d46b6bd29"
     },
     {
       "path": "Tusk_core/requirements.txt",
@@ -142,8 +142,8 @@
     },
     {
       "path": "Tusk_core/PROCESS_POLICY.md",
-      "bytes": 13383,
-      "sha256": "a28728ae16ae386b8b3d79b63b4df133ec84fddd34aafb369fe10e627c1aa8a8"
+      "bytes": 14133,
+      "sha256": "adf1160812d9b1df158fe1182b7e081fd5ffe82ec9e4da9c9bd7338b10408c74"
     },
     {
       "path": "Tusk_core/README.md",

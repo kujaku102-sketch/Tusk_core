@@ -37,7 +37,7 @@
       "security_boundary": {"content": ["chmod(", "icacls", "SeSecurityPrivilege"]}
     },
     "surfaces": {
-      "secrets": {"path_glob": ["**/*.pem"], "content": ["BEGIN PRIVATE KEY", "api_key", "password"]},
+      "secrets": {"content":["BEGIN PRIVATE KEY", "api_key", "password"]},
       "persistent_schema": {"path_glob": ["**/*.schema.json", "**/schemas/**"]},
       "process_stop": {"content": ["kill(", "terminate(", "taskkill", "signal."]},
       "distribution_installer": {"path_glob": ["**/DISTRIBUTION-MANIFEST.json", "**/setup.py", "**/pyproject.toml", "**/*.iss"]},

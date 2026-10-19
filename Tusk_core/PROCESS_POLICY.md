@@ -63,7 +63,7 @@ corrected_process_level = max(declared, scope, operation, protected_surface)
 
 必須値の欠落・不正値、非boolean flag、非正規化・workspace外パス、未知の保護面、根拠なし、異なる権威入力の矛盾は補正値を出さず`info_missing`で停止する。明示operation assertionsとflagの矛盾も同様である。自由文は機械根拠として解釈しない(profileの規則が見るのは、最初のPLANのbaselineの内容とscopeのpathだけである)。
 
-Coreは plan の classification から下限を計算し、申告と規則判定(`detected`)の厳しい方を採って`floor`・`protected`・`corrections`をplanに保存し、下限より低いriskを`risk_below_floor`で拒否する。規則判定が申告より厳しいときも、申告(`classification`)は書き換えない。申告と判定の厳しい方(真偽値は論理和、componentは対応表ごとに下限を計算して大きい方)で`floor`と`protected`を計算し、判定で増えた項目を補正の理由(planの`corrections`)に記録する。riskは自動で上げない。判定で上がった下限よりriskが低ければ`risk_below_floor`で拒否する。判定は最初のPLANだけで行い、RESULTでは再判定しない。
+Coreは plan の classification から下限を計算し、申告と規則判定(`detected`)の厳しい方を採って`floor`・`protected`・`corrections`をplanに保存し、下限より低いriskを`risk_below_floor`で拒否する。規則判定が申告より厳しいときも、申告(`classification`)は書き換えない。申告と判定の厳しい方(真偽値は論理和、componentは対応表ごとに下限を計算して大きい方)で`floor`と`protected`を計算し、判定で増えた真偽値の項目を補正の理由(planの`corrections`)に記録する。riskは自動で上げない。判定で上がった下限よりriskが低ければ`risk_below_floor`で拒否する。判定は最初のPLANだけで行い、RESULTでは再判定しない。
 Core自身のファイル(profile、schema、manifest)は規則に当たるので、Coreの作業はほぼP4になる。
 内容の判定はUTF-8として読んだ部分一致で、大文字と小文字を区別する。誤検出も見逃しも起きる。見逃しは申告で補う。
 RESULTでは、最初のPLANのbaselineと比べて`read_only`の内容が変わった、または`modify`が無くなった場合を`effect_result_mismatch`で拒否する。申告`create`が無いまま、`delete`が残ったままの場合は拒否せず、RESULTの`unfulfilled`(「無いので作れ」「残っているので消せ」)に記録し、statusとfocusに出す。`unfulfilled`が残ってもCLOSE completedは止めない。

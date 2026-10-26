@@ -20,27 +20,27 @@ from typing import Any, Callable, Iterable, TextIO
 
 
 FORCE_CODES = {
-    "F000", "F001", "F002", "F003", "F004", "F005", "F020", "F021", "F022", "F023", "F024", "F025", "F026",
-    "F040", "F041", "F042", "F043", "F044", "F045", "F060", "F061", "F062", "F063", "F064", "F065", "F066",
-    "F080", "F081", "F082", "F083", "F084", "F100", "F101", "F102", "F103", "F120", "F121", "F122", "F123",
-    "F124", "F140", "F141", "F142", "F160", "F161", "F162", "F163", "F180", "F181", "F182",
+    "F101", "F102", "F103", "F104", "F123", "F182",
+    "F201", "F202", "F203", "F204", "F205", "F206",
+    "F301", "F302", "F303",
+    "F401", "F402", "F403",
+    "F501", "F502", "F503", "F504",
 }
 MINOR_CODES = {
-    "M000", "M001", "M002", "M020", "M021", "M040", "M041", "M060", "M061", "M080", "M081", "M100", "M101",
-    "M120", "M140", "M141", "M160", "M180",
+    "M120", "M180",
+    "M201", "M202",
+    "M301", "M302", "M303",
+    "M401", "M402",
+    "M501",
 }
-LEGACY_CODES = {
-    "STALL_30M": "F021", "LOOP_DETECTED": "F022", "PROCESS_LOST": "F020", "PIPELINE_FATAL": "F026",
-    "ARTIFACT_INVALID": "F121", "TRANSLATION_FATAL": "F080", "TRANSLATION_SKIP": "M080", "CACHE_CONFLICT": "M141",
-    "STYLE_FALLBACK": "M100", "REVIEW_NEEDED": "M120",
-}
-REQUIRED_FORCE_CODES = {"F020", "F021", "F022", "F023", "F024", "F025", "F026", "F042", "F120", "F121", "F122", "F123", "F124", "F182"}
-REQUIRED_MINOR_CODES = {"M020", "M021", "M040", "M041", "M060", "M061", "M080", "M120", "M180"}
+REQUIRED_FORCE_CODES = {"F101", "F102", "F103", "F104", "F123", "F182", "F201", "F202", "F203", "F204", "F205", "F501", "F502", "F503"}
+REQUIRED_MINOR_CODES = {"M120", "M180", "M201", "M301", "M302", "M501"}
 RUN_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
-CODE_RE = re.compile(r"[FM][0-1][0-9]{2}\Z")
+FIXED_CODE_RE = re.compile(r"[FM][1-5][0-9]{2}\Z")
+PRODUCT_CODE_RE = re.compile(r"[FM][6-9][0-9]{2}\Z")
+CODE_RE = re.compile(r"[FM][1-9][0-9]{2}\Z")
 SHA256_RE = re.compile(r"[0-9a-fA-F]{64}\Z")
-# TUSK_* is canonical. IDTASK_* is accepted only while adapters migrate.
-MARKER_RE = re.compile(r"^\[(?:TUSK|IDTASK)_(FORCE_STOP|MINOR_ISSUE|PROGRESS)\]\s*(.*)$", re.IGNORECASE)
+MARKER_RE = re.compile(r"^\[TUSK_(FORCE_STOP|MINOR_ISSUE|PROGRESS)\]\s*(.*)$", re.IGNORECASE)
 FIELD_RE = re.compile(r"([A-Za-z_]+)=([^\s]+)")
 TIMESTAMP_RE = re.compile(r"(?<!\d)(?:\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?|\d{2}:\d{2}:\d{2}(?:\.\d+)?)(?!\d)")
 SECRET_PATTERNS = (
@@ -171,38 +171,22 @@ class SafeWriter:
 def parse_error_registry(path: Path) -> dict[str, Any]:
     force: set[str] = set()
     minor: set[str] = set()
-    legacy: dict[str, str] = {}
-    section = ""
     for raw in path.read_text(encoding="utf-8").splitlines():
         line = raw.strip()
-        if line == "### 強制停止":
-            section = "force"
-            continue
-        if line == "### 軽度問題":
-            section = "minor"
-            continue
-        if line.startswith("## 7. 既存コード互換表"):
-            section = "legacy"
-            continue
         if not line.startswith("|"):
             continue
         cells = [item.strip().strip("`") for item in line.strip("|").split("|")]
         if len(cells) < 2:
             continue
-        if section in {"force", "minor"} and CODE_RE.fullmatch(cells[0]):
+        if FIXED_CODE_RE.fullmatch(cells[0]):
             if len(cells) < 3 or not cells[1] or not cells[2]:
                 raise ValueError("registry row requires code, name, condition")
-            (force if section == "force" else minor).add(cells[0])
-        elif section == "legacy" and re.fullmatch(r"[A-Z][A-Z0-9_]+", cells[0]) and CODE_RE.fullmatch(cells[1]):
-            legacy[cells[0]] = cells[1]
+            (force if cells[0].startswith("F") else minor).add(cells[0])
     if not REQUIRED_FORCE_CODES <= force or not REQUIRED_MINOR_CODES <= minor:
-        raise ValueError("ERROR_CODES.md lacks required Tusk Core codes")
-    if force & minor or any(target not in force | minor for target in legacy.values()):
-        raise ValueError("ERROR_CODES.md registry compatibility mismatch")
-    if not set(LEGACY_CODES) <= set(legacy):
-        raise ValueError("ERROR_CODES.md lacks required compatibility entries")
-    return {"force": force, "minor": minor, "legacy": legacy}
-
+        raise ValueError("ERROR_CODES.md lacks required Tusk Core fixed codes (1XX-5XX)")
+    if force & minor:
+        raise ValueError("ERROR_CODES.md registry severity collision")
+    return {"force": force, "minor": minor}
 
 def validate_paths(args: argparse.Namespace) -> tuple[Path, Path, Path, Path, Path]:
     if not RUN_ID_RE.fullmatch(args.run_id) or ".." in args.run_id:
@@ -352,42 +336,26 @@ def parse_marker(line: str, run_id: str) -> dict[str, str] | None:
     return values
 
 
-def normalize_code(code: str, registry: dict[str, Any] | None = None) -> str:
-    legacy = registry["legacy"] if registry else LEGACY_CODES
-    return legacy.get(code.upper(), code.upper())
-
-
-def parse_event(line: str, run_id: str, registry: dict[str, Any]) -> dict[str, str] | None:
-    if MARKER_RE.match(line.strip()):
-        return parse_marker(line, run_id)
-    marker = parse_marker(line, run_id)
-    if marker is not None:
-        return marker
-    for legacy, code in registry["legacy"].items():
-        if re.search(rf"(?<![A-Z0-9_]){re.escape(legacy)}(?![A-Z0-9_])", line, re.IGNORECASE):
-            kind = "FORCE_STOP" if code.startswith("F") else "MINOR_ISSUE"
-            return {
-                "kind": kind, "code": code, "component": "legacy", "step": "legacy", "target": f"legacy:{legacy}",
-                "reason": line, "detail": line, "raw_line": line, "legacy": "true",
-            }
-    return None
+def parse_event(line: str, run_id: str, registry: dict[str, Any] | None = None) -> dict[str, str] | None:
+    return parse_marker(line, run_id)
 
 
 def validate_issue(marker: dict[str, str], registry: dict[str, Any] | None = None) -> tuple[str, str | None]:
     force = registry["force"] if registry else FORCE_CODES
     minor = registry["minor"] if registry else MINOR_CODES
-    code = normalize_code(marker.get("code", ""), registry)
+    code = marker.get("code", "").upper()
     kind = marker.get("kind", "")
+    is_product_code = bool(PRODUCT_CODE_RE.fullmatch(code))
     if kind == "FORCE_STOP":
-        if code not in force:
+        if not (code in force or (is_product_code and code.startswith("F"))):
             return code, "unregistered_code_or_severity_mismatch"
-        if marker.get("legacy") != "true" and any(not marker.get(field) for field in ("component", "step", "reason")):
+        if any(not marker.get(field) for field in ("component", "step", "reason")):
             return code, "force_marker_required_field_missing"
         return code, None
     if kind == "MINOR_ISSUE":
-        if code not in minor:
+        if not (code in minor or (is_product_code and code.startswith("M"))):
             return code, "unregistered_code_or_severity_mismatch"
-        if marker.get("legacy") != "true" and any(not marker.get(field) for field in ("component", "step", "target", "detail")):
+        if any(not marker.get(field) for field in ("component", "step", "target", "detail")):
             return code, "minor_marker_required_field_missing"
         return code, None
     return code, "invalid_issue_kind"
@@ -496,60 +464,60 @@ def validate_done(done_path: Path, contract_path: Path, contract: dict[str, Any]
     try:
         done = stable_load_json(done_path)
     except (OSError, ValueError, json.JSONDecodeError):
-        return "F122", {"valid": False, "reason": "invalid_or_unstable_done_json"}
+        return "F103", {"valid": False, "reason": "invalid_or_unstable_done_json"}
     required = {"schema_version", "run_id", "status", "validated_at_utc", "contract_sha256", "target_exit_codes", "success_conditions", "checks", "artifacts"}
     if not required <= done.keys() or done.get("schema_version") != 1 or done.get("run_id") != contract["run_id"] or done.get("status") != "validated":
-        return "F122", {"valid": False, "reason": "done_identity_status_or_fields"}
+        return "F103", {"valid": False, "reason": "done_identity_status_or_fields"}
     try:
         validated_at = parse_utc(done["validated_at_utc"])
     except (TypeError, ValueError):
-        return "F122", {"valid": False, "reason": "validated_at_utc"}
+        return "F103", {"valid": False, "reason": "validated_at_utc"}
     if validated_at.timestamp() < started_epoch or validated_at > datetime.now(timezone.utc):
-        return "F122", {"valid": False, "reason": "validated_at_range"}
+        return "F103", {"valid": False, "reason": "validated_at_range"}
     fixed_sha = contract_sha256 or contract.get("_sha256") or sha256_file(contract_path)
     if sha256_file(contract_path) != fixed_sha or done.get("contract_sha256") != fixed_sha:
-        return "F124", {"valid": False, "reason": "contract_sha256"}
+        return "F104", {"valid": False, "reason": "contract_sha256"}
     if done.get("target_exit_codes") != contract["expected_exit_codes"] or not isinstance(done.get("success_conditions"), dict) or done["success_conditions"].get("passed") is not True:
-        return "F122", {"valid": False, "reason": "success_conditions_or_exit_codes"}
+        return "F103", {"valid": False, "reason": "success_conditions_or_exit_codes"}
     check_items = done.get("checks")
     if not isinstance(check_items, list) or not check_items or any(not isinstance(item, dict) for item in check_items):
-        return "F122", {"valid": False, "reason": "checks_empty_or_invalid"}
+        return "F103", {"valid": False, "reason": "checks_empty_or_invalid"}
     check_map = {item.get("id"): item for item in check_items if isinstance(item.get("id"), str)}
     if len(check_map) != len(check_items) or not set(contract["required_check_ids"]) <= set(check_map):
-        return "F122", {"valid": False, "reason": "required_checks"}
+        return "F103", {"valid": False, "reason": "required_checks"}
     for check_id in contract["required_check_ids"]:
         item = check_map[check_id]
         evidence_ok, evidence_reason = _evidence_path(item, started_epoch)
         if item.get("passed") is not True or not evidence_ok:
-            return "F122", {"valid": False, "reason": evidence_reason or "required_check_failed", "check_id": check_id}
+            return "F103", {"valid": False, "reason": evidence_reason or "required_check_failed", "check_id": check_id}
     exit_check = check_map.get("exit_code")
     if exit_check is not None and (not isinstance(exit_check.get("actual"), int) or isinstance(exit_check.get("actual"), bool) or exit_check["actual"] not in contract["expected_exit_codes"]):
-        return "F122", {"valid": False, "reason": "target_exit_code"}
+        return "F103", {"valid": False, "reason": "target_exit_code"}
     if contract["require_counts"]:
-        return "F122", {"valid": False, "reason": "counts_evidence_schema_undefined"}
+        return "F103", {"valid": False, "reason": "counts_evidence_schema_undefined"}
     if contract["require_id_set_sha256"]:
-        return "F122", {"valid": False, "reason": "id_set_evidence_schema_undefined"}
+        return "F103", {"valid": False, "reason": "id_set_evidence_schema_undefined"}
     artifact_items = done.get("artifacts")
     if not isinstance(artifact_items, list) or any(not isinstance(item, dict) for item in artifact_items):
-        return "F121", {"valid": False, "reason": "artifact_records"}
+        return "F102", {"valid": False, "reason": "artifact_records"}
     artifacts = {item.get("path"): item for item in artifact_items if isinstance(item.get("path"), str)}
     if len(artifacts) != len(artifact_items) or set(artifacts) != set(contract["required_artifacts"]):
-        return "F120", {"valid": False, "reason": "artifact_set"}
+        return "F101", {"valid": False, "reason": "artifact_set"}
     for required_path in contract["required_artifacts"]:
         item = artifacts[required_path]
         path = Path(required_path)
         try:
             updated_at = parse_utc(item.get("updated_at_utc"))
         except (TypeError, ValueError):
-            return "F121", {"valid": False, "reason": "artifact_updated_at", "path": required_path}
+            return "F102", {"valid": False, "reason": "artifact_updated_at", "path": required_path}
         if not path.is_file():
-            return "F120", {"valid": False, "reason": "artifact_missing", "path": required_path}
+            return "F101", {"valid": False, "reason": "artifact_missing", "path": required_path}
         if path.stat().st_mtime < started_epoch or updated_at.timestamp() < started_epoch:
-            return "F121", {"valid": False, "reason": "artifact_stale", "path": required_path}
+            return "F102", {"valid": False, "reason": "artifact_stale", "path": required_path}
         if not isinstance(item.get("sha256"), str) or not SHA256_RE.fullmatch(item["sha256"]):
-            return "F121", {"valid": False, "reason": "artifact_hash_field", "path": required_path}
+            return "F102", {"valid": False, "reason": "artifact_hash_field", "path": required_path}
         if item["sha256"].lower() != sha256_file(path):
-            return "F124", {"valid": False, "reason": "artifact_sha256", "path": required_path}
+            return "F104", {"valid": False, "reason": "artifact_sha256", "path": required_path}
     return None, {"valid": True, "checks": sorted(check_map), "artifacts": sorted(artifacts), "validated_at_utc": done["validated_at_utc"]}
 
 
@@ -876,8 +844,8 @@ def _force_exit(args: argparse.Namespace, writer: SafeWriter, output_dir: Path, 
         except Exception as exc:
             stop_result = {"error": str(exc), "residual_pids": []}
     codes = [code for code, _ in force]
-    if stop_result and (stop_result.get("residual_pids") or stop_result.get("error")) and "F024" not in codes:
-        codes.append("F024")
+    if stop_result and (stop_result.get("residual_pids") or stop_result.get("error")) and "F503" not in codes:
+        codes.append("F503")
     user_requested_stop = user_console_stop and "F182" in codes and not any(code != "F182" for code in codes)
     report = {
         "status": "force_stop", "run_id": args.run_id, "primary_code": primary, "force_codes": codes, "reason": reason,
@@ -916,7 +884,7 @@ def main(argv: list[str] | None = None) -> int:
         validate_luna_task(args, output_dir.parent)
         lock_status, lock = acquire_guard_lock(output_dir, args.run_id)
         if lock_status == "live":
-            return _force_exit(args, writer, output_dir, processes, [("F023", "live guard lock detected")], 0, json.dumps(lock, ensure_ascii=False))
+            return _force_exit(args, writer, output_dir, processes, [("F502", "live guard lock detected")], 0, json.dumps(lock, ensure_ascii=False))
         if lock_status != "acquired":
             raise ValueError("stale or invalid guard lock")
     except Exception as exc:
@@ -981,7 +949,7 @@ def main(argv: list[str] | None = None) -> int:
                     fingerprint = issue_fingerprint(marker)
                     repeated = (fingerprint, repeated[1] + 1) if repeated and repeated[0] == fingerprint else (fingerprint, 1)
                     if repeated[1] >= args.repeat_threshold:
-                        repeat_force = [("F022", "repeated normalized event")]
+                        repeat_force = [("F202", "repeated normalized event")]
                     if marker["kind"] == "MINOR_ISSUE":
                         minor_events += 1
                         minor_targets.add(marker["target"])
@@ -1009,9 +977,9 @@ def main(argv: list[str] | None = None) -> int:
                 writer.jsonl(events_path, {"event": "completed", "run_id": args.run_id, "checked_at_utc": utc_now()})
                 return 0
             if args.pid_policy == "supervisor_required_until_done" and not supervisors_alive(processes, query_process_snapshot()):
-                return _force_exit(args, writer, output_dir, processes, [("F020", "required supervisor lost")], minor_events, log_tail)
+                return _force_exit(args, writer, output_dir, processes, [("F501", "required supervisor lost")], minor_events, log_tail)
             if time.monotonic() - last_progress >= args.stall_seconds:
-                return _force_exit(args, writer, output_dir, processes, [("F021", "progress stalled")], minor_events, log_tail)
+                return _force_exit(args, writer, output_dir, processes, [("F201", "progress stalled")], minor_events, log_tail)
             if repeat_force:
                 return _force_exit(args, writer, output_dir, processes, repeat_force, minor_events, log_tail)
             status = {"status": "watching", "run_id": args.run_id, "idle_seconds": round(time.monotonic() - last_progress, 1), "minor_issue_count": minor_events, "registered_process_count": len(processes), "checked_at_utc": utc_now()}

@@ -1,38 +1,46 @@
 <!-- md-scope-document: COMMON -->
-# Error policy
+# Tusk Core Error Policy
 
-エラーコードの人間向け正本。機械が読む具体的なコード一覧と互換表は
-`ERROR_CODES.md`を正本とする。
+## 1. エラーコード体系 (`[F|M][1-9][0-9]{2}`)
+すべてのエラーコードは **先頭1文字（重大度）＋ 3桁の数字（`XYZ`）** で表す（旧 `0XX` 番台や文字列レガシーコードは廃止）。
 
-## Code space
+### 先頭文字（重大度：ガードモニターの挙動を決定）
+- **`F` (Force Stop)**: 即座にプロセス停止・作業中断を実行し、原因解析へ回す。
+- **`M` (Minor Issue)**: 軽度問題として記録し処理を継続する（閾値超過時は `F123` で強制停止）。
 
-- `F000-F199`: Core共通の強制停止。後続処理を停止する。
-- `M000-M199`: Core共通の軽度問題。証拠を保存して処理を継続する。
-- `F200-F299`: プログラム依存の強制停止。
-- `M200-M299`: プログラム依存の軽度問題。
-- `F000`と`M000`は分類不能・未確定用とする。
-- 完全なコードは接頭辞を含む4文字 (`Fxxx`, `Mxxx`) とする。
+### 百の位 `X`（領域・ドメイン分類）
+- **`1XX` 〜 `5XX`【Core指定・固定領域】**（全プロジェクト共通。[`ERROR_CODES.md`](file:///C:/Users/Masaya.Futamata/Documents/Tusk_core_rb/Tusk_core/ERROR_CODES.md) で定義された番号のみ有効）
+  - **`1XX`**: **Core**（テスト契約・成果物検証・監視整合性・手動停止）
+  - **`2XX`**: **作業周り**（進捗ハング・反復ループ/手戻り上限・スコープ境界・セッション競合）
+  - **`3XX`**: **データ周り**（入出力データ破損・ID/件数不一致・スキーマ検証）
+  - **`4XX`**: **通信周り**（API認証・タイムアウト・レート制限・フォールバック）
+  - **`5XX`**: **プロセス競合・他ソフト連携周り**（Supervisor消失・二重起動ロック・プロセス残留・外部アプリ異常）
+- **`6XX` 〜 `9XX`【製品自由領域】**（Extension・製品仕様ごとに自由に割り当て可能）
+  - ガードモニターは **`[F|M][6-9][0-9]{2}` の形式と必須フィールドさえ満たしていれば、製品が何であれ無条件で正規コードとして受理**し、`F` なら強制停止、`M` なら軽度問題カウントとして同一挙動で処理する。
 
-共通番号帯は、`001-019`環境・設定、`020-039`プロセス・停止、
-`040-059`ファイル・パス、`060-079`データ、`080-099`外部通信、
-`100-179`拡張領域、`180-189`ユーザー操作、`190-199`将来拡張とする。
+### 十の位 `Y`・一の位 `Z`（サブ分類と連番）
+- **`X0Z`**: 基本エラー・契約/入出力エラー
+- **`X1Z` 〜 `X2Z`**: 状態異常・閾値超過・競合エラー
+- **`X8Z`**: 人間介入・UI/コンソール起因
 
-プログラム依存コードは各プログラムのレジストリで`program_id`、意味キー、
-F/M区分、停止・継続動作を定義する。未バインド番号を推測せず、`F000`または
-`M000`で記録する。既存の共通番号帯にある互換コードは個別Specなしに改番しない。
+---
 
-## Marker grammar
+## 2. 構造化ログマーカー文法
+監視対象プロセスは、以下の1行マーカーをログへ出力する。
 
+### 強制停止 (`TUSK_FORCE_STOP`)
 ```text
-[TUSK_FORCE_STOP] code=Fxxx program_id=<PROGRAM_ID> run_id=<RUN_ID> component=<COMPONENT> step=<STEP> reason=<REASON>
-[TUSK_MINOR_ISSUE] code=Mxxx program_id=<PROGRAM_ID> run_id=<RUN_ID> component=<COMPONENT> step=<STEP> target=<TARGET> detail=<DETAIL>
-[TUSK_PROGRESS] run_id=<RUN_ID> component=<COMPONENT> step=<STEP> current=<CURRENT> total=<TOTAL|unknown>
+[TUSK_FORCE_STOP] run_id=<id> code=F201 component=<name> step=<step> reason=<no_space_reason>
 ```
 
-ログは1行で出力し、直後にflushする。`IDTASK_*` markerは入力互換だけに使用し、
-新規Core出力へ使用しない。拡張固有コードは有効化された拡張自身の
-`ERROR_CODES.md`を参照する。
+### 軽度問題 (`TUSK_MINOR_ISSUE`)
+```text
+[TUSK_MINOR_ISSUE] run_id=<id> code=M301 component=<name> step=<step> target=<target> detail=<no_space_detail>
+```
 
-軽度問題が設定された件数または比率の閾値へ達した場合は、レジストリの対応する
-Fコードへ昇格して停止する。`F182`は監視コンソールが生成する人間停止専用であり、
-通常ログから偽装しない。
+### 進捗報告 (`TUSK_PROGRESS`)
+```text
+[TUSK_PROGRESS] run_id=<id> component=<name> step=<step> current=<int> total=<int|unknown>
+```
+
+- `F182`（ユーザー手動停止）はガードモニターのコンソール `/stop` コマンド専用であり、ログマーカーからの注入は拒否される。

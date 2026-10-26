@@ -1,64 +1,93 @@
 {
   "schema_version": 1,
+  "version": "2.0.0-rb",
   "root": "Tusk_core",
   "algorithm": "sha256",
   "managed_files": [
-    {"path":"AGENTS.md","sha256":"c352b287d7d12cb7c95a732210de612b37077466f4f08db71262cd61eafce0c5"},
-    {"path":"AUTHORITY-MAP.json","sha256":"431db63e75f1ad88b0e0cd7504aa95c8efae0ecaef2c68b66bc7f362c670311a"},
-    {"path":"AUTHORITY_SEPARATION.md","sha256":"b39946ca06a8012126a67fd26d0df2aa9e0bf9ca725643d05db9a45c79005593"},
-    {"path":"CONTEXT_CACHE_SPEC.md","sha256":"621fd07920ec1bed93e9add13661bc6ac9e6b20b6e13ee567ee90929ceeb8002"},
-    {"path":"ERROR_CODES.md","sha256":"22fc6749091405e940b5887ba267fa53d41a943797d0c71e10c68de746820438"},
-    {"path":"ERROR_CODES_SPEC.md","sha256":"a8128ed51f3b2a25b298ae44ea5dbfd637fe20bcdb5fe2bc5549a032949588d3"},
-    {"path":"ERROR_POLICY.md","sha256":"8e8c2f1cc2f5aee650174c45657bbd2328dcc5bbba53d6c0aa4c4f3f5dcc80e0"},
-    {"path":"extensions.json","sha256":"6c72e45ab4244e011587469dfd49c9efc25376e5480a49569c5205e928141971"},
-    {"path":"FOCUS_CACHE_SPEC.md","sha256":"5c68a5e1bb8cc37383e10226cb300504b35d0d4d175ec50d03eef8ab5a9a6f5a"},
-    {"path":"GENERAL.md","sha256":"7d878e11c49c4f4833daeeb09de096d338720e69e88a406d4bd91c637c05fea0"},
-    {"path":"IMPLEMENTATION_INTENSITY.md","sha256":"bc87202ce6c25dff5a5b04bc065ed8fdb58efb0651cc05cd1f3c447016f3e43c"},
-    {"path":"INCUBATION_SPEC.md","sha256":"3cdd95831ca08f722fba004cd12785da542632c95eae82476bae16de88066e5d"},
-    {"path":"INTEGRITY_POLICY.md","sha256":"c270f4d4d9a26a93788fbb97cbe95cb3bfc4415225122470c06e146a57e55405"},
-    {"path":"LIGHTWEIGHT_ROUTE.md","sha256":"dbb16dec46706dc2761328c83fd5b6a786e5d8abcf52ec0c7dfdd410f734daac"},
-    {"path":"PROCESS_LEVEL_CORRECTIONS.md","sha256":"a72b4f1612525dc177b4f97372a6fe67e260dbe3a626952121fe6863ef65a0d4"},
-    {"path":"PROCESS_LEVELS.md","sha256":"97148b630d0dbeef32f7d62926c3bca141fe3dbe5218d711f759d0a336068588"},
-    {"path":"PROCESS_POLICY.md","sha256":"9059b421018b24ebe9a14a91e72fe640f9ffcae357730c1d26894a15c621eabd"},
-    {"path":"PROTECTED_SURFACES.md","sha256":"dbb16dec46706dc2761328c83fd5b6a786e5d8abcf52ec0c7dfdd410f734daac"},
-    {"path":"README.md","sha256":"f58f39f0f562d9dc0dfe33d821ae41102e756de54665c221817017e32ce2339f"},
-    {"path":"requirements.txt","sha256":"89847874f5cf8fcc8df2f025ff5745332a9ab654427aed9ca70d79d026cdcdde"},
-    {"path":"RISK_EVIDENCE.md","sha256":"dbb16dec46706dc2761328c83fd5b6a786e5d8abcf52ec0c7dfdd410f734daac"},
-    {"path":"ROUTING_POLICY.md","sha256":"c4a017a4676dc4c1727a08b2963c7dfe4b8b3aa685d15569f85db7c1bdd91ee1"},
-    {"path":"SKIM_DECISION.md","sha256":"bc87202ce6c25dff5a5b04bc065ed8fdb58efb0651cc05cd1f3c447016f3e43c"},
-    {"path":"START-HERE.md","sha256":"290f2e364150a79c20ac93c655d70b7cc0122b71744a8afbba75b42d683fbe9f"},
-    {"path":"SYNC_POLICY.md","sha256":"5056ea1154239dc44e317394781c0c7bf5d2c04a488c21ff469ef1022206c928"},
-    {"path":"TEST-MAP.json","sha256":"ef8be129d5d2d4298a0c91e4b932adcd4b5071313ffbb75c2ca99051880f4887"},
-    {"path":"TEST_POLICY.md","sha256":"35a981eebe4280e277680155b43b1cfe502223660d429cf0c6c33e15e65ba649"},
-    {"path":"TEST_SELECTION.md","sha256":"fff66c6c79f174dcc206dcd179837daea56fae87d7ae20131dc0fda7c8d6ed76"},
-    {"path":"tests/test_common_test_guard_monitor.py","sha256":"fdb358529073ace462f0fb6c0ce23ad5cee99aa83815fb341e140944a903fbe9"},
-    {"path":"tests/test_authority_auditor.py","sha256":"034a5182ae83d6a617be39c5b3973d4387c44949ca6394785aac56b409bcd741"},
-    {"path":"tests/test_entry_documents_contract.py","sha256":"25b3faec476fe27082434b8d51854f4192e11eb6de1aa4363d375b69e1b0f25b"},
-    {"path":"tests/test_error_policy_contract.py","sha256":"9ef484ff62bec9f33c0e4d6d143d056d0008f089594e562cb40ab05b60a95698"},
-    {"path":"tests/test_extension_manager.py","sha256":"c5470e4b52e77478d7eb95ab9b9f1fdadcab9ca0af977411194600e6a7097fc9"},
-    {"path":"tests/test_integrity_gate.py","sha256":"92d1094f7d625c1dec6fa5f85c86210c52c9613089af9528e39dfb9b85553f43"},
-    {"path":"tests/test_inq.py","sha256":"880a952443e5e010ba1afb83912e442b7d81440153c8b298ab9dabe5bb9320c5"},
-    {"path":"tests/test_landmine_cache.py","sha256":"76013a0834b717de5102b977deb601872a488e4b822aa96ea013b097f2f5fa8c"},
-    {"path":"tests/test_process_classifier.py","sha256":"25f414aad594ca99b26b4c885d52f767abb87c678b8c79cd24f5b0fecd3f0ba0"},
-    {"path":"tests/test_routing_policy.py","sha256":"82db0d5c9eb77df877608b8a54b9e7e25ed09c0b9c04ecacdae4f6f2b35c7541"},
-    {"path":"tests/test_simplified_operations_contract.py","sha256":"394dea8a296e2163fe66a6c74fa6401409adf3517798ad5f063a8300f81c359d"},
-    {"path":"tests/test_tcs007_test_policy_contract.py","sha256":"40eae51e388e273fca1e3fd93a32f0a2bc00920fffec5950e5ddd8b38d9e474f"},
-    {"path":"tests/test_tcs_contracts.py","sha256":"c9624d2391cff5a249ee540e7617ba8946bfb8f73850f1201d3807fa342b3011"},
-    {"path":"tests/test_test_selector.py","sha256":"a591814bc9d60f0194ddf5e402e25abe5057c7bb8adce3c9c7ed802fb4c2db99"},
-    {"path":"tests/test_tusk_manager.py","sha256":"a80ebd2da1fc36754f88053dbda1b74f245936edfacdbfe7b09b8f962e0eb18e"},
-    {"path":"tools/extension_manager.py","sha256":"23387896c56d6ede327f813275a833969eee0df41153ed222b41f7d30b730aaf"},
-    {"path":"tools/authority_auditor.py","sha256":"c5d209cfb8dfe9b0cbb21a790f0bc559e351f60e936990acb72deea96014a0ed"},
-    {"path":"tools/integrity_gate.py","sha256":"dde60be3959a571665b4bd86a0224e8e3b4282a9925adae5c68be821e4ef13e4"},
-    {"path":"tools/inq.py","sha256":"6c52260c1c72b785d322e28e7520efac1c8481be62f7fde4993d70dee7cf17ac"},
-    {"path":"tools/landmine_cache.py","sha256":"b31003977930c7301bf12c9df433a976466aa9929bd269cf5d4f21f7b6bb8208"},
-    {"path":"tools/process_classifier.py","sha256":"b472f56389fa9e7e248138917756bae7295dfb7b12591d693ddb9acd865d65a0"},
-    {"path":"tools/test_guard_monitor.py","sha256":"2709c1f32b1506e320f83a07400f5563b073ac78870fd74735f1dcd74a013f85"},
-    {"path":"tools/test_selector.py","sha256":"8b5d194ddc5653de3aaeb14df12dbaff7cf40ebd8dc1f374db34fb8ea7eb64c5"},
-    {"path":"tools/tusk_manager.py","sha256":"e3c83d6f278a34acfb018b43a442f0a919eaef93935b25203fbf0e72670a0eec"}
+    {
+      "path": "AGENTS.md",
+      "sha256": "192febfcece76e2098295f8c50e6b7069dfbf675d7fe7a19c378cd4914586264"
+    },
+    {
+      "path": "AUTHORITY-MAP.json",
+      "sha256": "e0b71907a024d6b3b51daabb4246bf853bd749713c5066c29c3ab41777520a43"
+    },
+    {
+      "path": "ERROR_CODES.md",
+      "sha256": "c5e6feb05755cca8b26926df8d669369c3da019c8151ba46a9b2b9aaeb0dc30f"
+    },
+    {
+      "path": "ERROR_POLICY.md",
+      "sha256": "2794ea346681350af02abc672ac4bc4f1dd263339f891a15a210e0dd20d43ca2"
+    },
+    {
+      "path": "EXTENSION_POLICY.md",
+      "sha256": "a9ca69deadb2a348901d7e74a0b58de6af5c4333962eeaf7851b92dd47dbcc06"
+    },
+    {
+      "path": "extensions.json",
+      "sha256": "a2315cf4a44718735ffaa944d714871b7a8a0e8e4e9ef43c104077e2220f7c45"
+    },
+    {
+      "path": "GENERAL.md",
+      "sha256": "10ee911000479a1cbdb84c34d1741f0b58ea5012e3979596fb5d53c2b767a571"
+    },
+    {
+      "path": "PROCESS_POLICY.md",
+      "sha256": "46f2611565ada53305b0d95dc1f521ad89d2999550463209ea17854fc11fe4b9"
+    },
+    {
+      "path": "profiles/CLAUDE_PROFILE.md",
+      "sha256": "7d0ef22a37e6eed6885998fb38a0b0c3727a4e0dcd0d900a64942db485483e08"
+    },
+    {
+      "path": "profiles/CODEX_PROFILE.md",
+      "sha256": "f242ed5551998c4fbe830a1adf411dd5d6d7cc82d99992bd49b2d69327cbf03f"
+    },
+    {
+      "path": "profiles/GEMINI_PROFILE.md",
+      "sha256": "750c6984ec50adcc2a63061a7a4c7646004704e69179c9e21340dcf5c133a9f4"
+    },
+    {
+      "path": "README.md",
+      "sha256": "3198f0b3f28c2c41ff13b04c2bb49be56b9acd47304ef9cb9093afb5d2089264"
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "89847874f5cf8fcc8df2f025ff5745332a9ab654427aed9ca70d79d026cdcdde"
+    },
+    {
+      "path": "START-HERE.md",
+      "sha256": "fdf00ae560cc3b6780a08a38ac08ee4cda2f1475e7d457635d676b28c6faa728"
+    },
+    {
+      "path": "TEST-MAP.json",
+      "sha256": "65a909f6470935238934f5b3d86c7507d2ac5e055a9ef3c91944489feb7ad4a3"
+    },
+    {
+      "path": "TEST_POLICY.md",
+      "sha256": "35a981eebe4280e277680155b43b1cfe502223660d429cf0c6c33e15e65ba649"
+    },
+    {
+      "path": "tests/test_core_rb.py",
+      "sha256": "62d16234dd4a6d99d0f741ce9b8539adf772b4954357f5cde662cdc698b65663"
+    },
+    {
+      "path": "tools/landmine_cache.py",
+      "sha256": "b31003977930c7301bf12c9df433a976466aa9929bd269cf5d4f21f7b6bb8208"
+    },
+    {
+      "path": "tools/test_guard_monitor.py",
+      "sha256": "d36d17f381f1d6551359170be36158dd7d65efe0a77d4ed15543b02f3e2a5189"
+    },
+    {
+      "path": "tools/test_selector.py",
+      "sha256": "8b5d194ddc5653de3aaeb14df12dbaff7cf40ebd8dc1f374db34fb8ea7eb64c5"
+    }
   ],
   "omissions": [
     "DISTRIBUTION-MANIFEST.json is deliberately not self-hashed.",
-    "Extensions are external siblings and are validated only after explicit activation.",
-    "work/, archive/, specs/, and generated caches are runtime, history, or development evidence and are not distributed."
+    "Extensions are external siblings and are validated only after explicit activation, except Tusk_Basic_skills, which hosts tools/tusk_manager (moved 2026-10-26) and is always enabled.",
+    "work/ is runtime state (settings, focus_cache, context_cache, recovery) and is not distributed."
   ]
 }

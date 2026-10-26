@@ -14,3 +14,7 @@
 Thumbs.db
 .idea/
 .vscode/
+
+# extensions are separate repositories
+/extensions/Tusk_Basic_skills/
+/extensions/Tusk_DTP/

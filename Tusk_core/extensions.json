@@ -1,15 +1,21 @@
 {
   "schema_version": 1,
-  "architecture": "Tusk_core",
-  "components": [
+  "extensions": [
     {
-      "id": "core",
-      "path": ".",
-      "entry": "AGENTS.md",
-      "kind": "core",
-      "status": "operational",
-      "scope": "domain-neutral",
-      "requires": []
+      "id": "tusk_basic_skills",
+      "name": "Tusk_Basic_skills",
+      "root": "../extensions/Tusk_Basic_skills",
+      "entry": "../extensions/Tusk_Basic_skills/AGENTS.md",
+      "manifest": "../extensions/Tusk_Basic_skills/EXTENSION-MANIFEST.json",
+      "Activation": "always-enabled (required: hosts tusk_manager at skills/tusk-manager/scripts/tusk_manager.py; cannot be disabled or removed)"
+    },
+    {
+      "id": "tusk_dtp",
+      "name": "Tusk_DTP",
+      "root": "../extensions/Tusk_DTP",
+      "entry": "../extensions/Tusk_DTP/AGENTS.md",
+      "manifest": "../extensions/Tusk_DTP/EXTENSION-MANIFEST.json",
+      "Activation": "disabled-by-default; enable via work/settings/extensions.enabled.json"
     }
   ]
 }
